@@ -1,0 +1,50 @@
+sequenceDiagram
+    actor NguoiDung as "Người Dùng"
+    participant MainMenu as "Hàm Main\n(Menu Hệ thống)"
+    participant Dstour as "DanhSachTour\n(DS Liên kết kép)"
+    participant Dskhach as "DanhSachKhach\n(DS Liên kết kép)"
+    participant FileIO as "Hệ thống File"
+
+    NguoiDung ->> MainMenu : Chạy chương trình
+    activate MainMenu
+
+    MainMenu ->> FileIO : DocFile(Tours.txt, Khach.txt)
+    activate FileIO
+    FileIO -->> MainMenu : Trả về dữ liệu gốc
+    deactivate FileIO
+
+    loop Vòng lặp cho đến khi chọn Thoát (0)
+        MainMenu ->> NguoiDung : Hiển thị Menu (1..8)
+        NguoiDung ->> MainMenu : Nhập phím chức năng
+
+        alt Chức năng Thêm/Sửa/Xóa
+            MainMenu ->> Dstour : ThemSuaXoa_Tour()
+            activate Dstour
+            Dstour -->> MainMenu : Cập nhật lại Node
+            deactivate Dstour
+            MainMenu ->> NguoiDung : Thông báo thành công
+
+        else Chức năng Tìm kiếm / Lọc
+            MainMenu ->> Dskhach : TimKiemKhachHang()
+            activate Dskhach
+            Dskhach -->> MainMenu : Trả về Node kết quả
+            deactivate Dskhach
+            MainMenu ->> NguoiDung : Hiển thị kết quả ra màn hình
+
+        else Chức năng Thống kê / Tính toán
+            MainMenu ->> Dstour : TinhTongDoanhThu()
+            activate Dstour
+            Dstour -->> MainMenu : Trả về con số tính toán
+            deactivate Dstour
+            MainMenu ->> NguoiDung : In báo cáo thống kê
+        end
+    end
+
+    NguoiDung ->> MainMenu : Nhập 0 (Thoát)
+    MainMenu ->> FileIO : GhiFile(Dữ liệu mới)
+    activate FileIO
+    FileIO -->> MainMenu : Hoàn tất lưu trữ
+    deactivate FileIO
+
+    MainMenu -->> NguoiDung : Kết thúc chương trình
+    deactivate MainMenu
