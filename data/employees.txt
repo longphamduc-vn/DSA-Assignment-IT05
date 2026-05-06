@@ -1,0 +1,3 @@
+E01|Phan Minh K|Consultant|2|8200000
+E02|Hoang Thi M|Manager|0|0
+E03|Vu Van T|Guide|0|0

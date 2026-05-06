@@ -1,26 +1,28 @@
-#pragma once
+// ==========================================
+// File: models/Tour.h
+// Description: Data model cho Tour du lịch
+// ==========================================
+#ifndef TOUR_H
+#define TOUR_H
+
 #include <string>
-#include <iostream>
 
-class Tour {
-private:
-    std::string id;
-    std::string name;
+struct Tour {
+    std::string tourId;
+    std::string destination;
     double price;
-    int days;
+    int maxCapacity;
+    int availableSeats;
+    std::string departureDate; // Format đề xuất: YYYY-MM-DD để dễ sắp xếp
+    std::string status;        // "Open", "Upcoming", "Cancelled"
 
-public:
-    Tour();
-    Tour(std::string id, std::string name, double price, int days);
+    // Default Constructor
+    Tour() : price(0.0), maxCapacity(0), availableSeats(0), status("Open") {}
 
-    // Getters
-    std::string getId() const;
-    std::string getName() const;
-    double getPrice() const;
-    int getDays() const;
-
-    // Setters
-    void setPrice(double newPrice);
-
-    friend std::ostream& operator<<(std::ostream& os, const Tour& tour);
+    // Parameterized Constructor
+    Tour(std::string id, std::string dest, double p, int cap, std::string date)
+        : tourId(id), destination(dest), price(p), maxCapacity(cap), 
+          availableSeats(cap), departureDate(date), status("Open") {}
 };
+
+#endif // TOUR_H

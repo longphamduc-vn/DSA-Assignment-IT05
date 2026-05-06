@@ -1,20 +1,4 @@
-T01
-Tour Da Nang - Hoi An
-3500.0
-4
-T02
-Tour Phu Quoc VIP
-5500.0
-3
-T03
-Tour Sapa - Fansipan
-2800.0
-3
-T04
-Tour Nha Trang - Vinpearl
-3200.0
-4
-T05
-Tour Da Lat Mong Mo
-2500.0
-3
+T01|Nha Trang - Da Lat|2500000|20|18|2026-06-15|Open
+T02|Phu Quoc 3N2D|4500000|15|15|2026-07-10|Open
+T03|Sa Pa - Fansipan|3200000|25|0|2026-05-20|Upcoming
+T04|Da Nang - Hoi An|3800000|30|30|2026-08-05|Open

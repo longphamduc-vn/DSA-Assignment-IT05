@@ -1,16 +1,4 @@
-KH01
-Nguyen Van A
-0901234567
-1990
-KH02
-Tran Thi B
-0912345678
-1998
-KH03
-Le Van C
-0987654321
-1985
-KH04
-Pham Thi D
-0909999888
-2002
+C01|Nguyen Van A|0901234567|nva@gmail.com|Ha Noi|5000000|0
+C02|Tran Thi B|0912345678|ttb@gmail.com|Hai Phong|0|0
+C03|Le Van C|0987654321|lvc@gmail.com|Da Nang|3200000|0
+C04|Pham Khach D|0999888777|pkd@gmail.com|Ho Chi Minh|0|1
