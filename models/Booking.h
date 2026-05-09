@@ -1,85 +1,77 @@
-// ==========================================
-// File: models/Booking.h
-// Description: Data model cho Đơn đặt Tour và Hành khách
-// ==========================================
 #ifndef BOOKING_H
 #define BOOKING_H
 
 #include <string>
-#include "../core/LinkedList.h"
-
-// Struct phụ thuộc: Hành khách đi kèm trong một Booking
-struct Passenger {
-    std::string name;
-    std::string idCard; // CMND / CCCD / Passport
-
-    Passenger() {}
-    Passenger(std::string n, std::string id) : name(n), idCard(id) {}
-};
+#include <sstream>
+#include "Customer.h"
+#include "Tour.h"
+#include "Employee.h"
 
 struct Booking {
     std::string bookingId;
-    std::string customerId;
-    std::string tourId;
-    std::string employeeId;
+    std::string bookingDate;
+    int numberOfPeople;
+    std::string status;  // confirmed, cancelled, pending
+
+    Customer customer;
+    Tour tour;
+    Employee employee;
     
-    int passengerCount;
-    double totalAmount;
-    std::string bookingDate; // Format: YYYY-MM-DD
-    std::string status;      // "Pending", "Confirmed", "Cancelled"
-    
-    // Danh sách hành khách trong đơn vị Booking (Không dùng std::list)
-    LinkedList<Passenger> passengers;
-
-    // Default Constructor
-    Booking() : passengerCount(0), totalAmount(0.0), status("Pending") {}
-
-    // Parameterized Constructor
-    Booking(std::string bId, std::string cId, std::string tId, std::string eId, std::string date)
-        : bookingId(bId), customerId(cId), tourId(tId), employeeId(eId),
-          passengerCount(0), totalAmount(0.0), bookingDate(date), status("Pending") {}
-
-    // Copy Constructor (Ngăn chặn Undefined Behavior do Copy mảng động / Linked List)
-    Booking(const Booking& other) {
-        bookingId = other.bookingId;
-        customerId = other.customerId;
-        tourId = other.tourId;
-        employeeId = other.employeeId;
-        passengerCount = other.passengerCount;
-        totalAmount = other.totalAmount;
-        bookingDate = other.bookingDate;
-        status = other.status;
-        
-        // Deep copy danh sách hành khách
-        Node<Passenger>* current = other.passengers.getHead();
-        while (current != nullptr) {
-            passengers.addLast(current->data);
-            current = current->next;
-        }
+    /**
+     * @brief Serialize Booking to a string for file storage.
+     * Note: Only stores IDs of the nested objects to prevent data duplication.
+     */
+    std::string toFileString() const {
+        return bookingId + "|" + bookingDate + "|" + 
+               std::to_string(numberOfPeople) + "|" + status + "|" + 
+               customer.customerId + "|" + tour.tourId + "|" + employee.employeeId;
     }
 
-    // Assignment Operator
-    Booking& operator=(const Booking& other) {
-        if (this != &other) {
-            bookingId = other.bookingId;
-            customerId = other.customerId;
-            tourId = other.tourId;
-            employeeId = other.employeeId;
-            passengerCount = other.passengerCount;
-            totalAmount = other.totalAmount;
-            bookingDate = other.bookingDate;
-            status = other.status;
-
-            // Xóa danh sách cũ và Deep copy danh sách mới
-            passengers.clear();
-            Node<Passenger>* current = other.passengers.getHead();
-            while (current != nullptr) {
-                passengers.addLast(current->data);
-                current = current->next;
-            }
+    /**
+     * @brief Deserialize Booking from a file string.
+     * Note: Only recovers the IDs of the nested objects. Full objects should be 
+     * reconstructed by a service/manager class later if needed.
+     */
+    void fromFileString(const std::string& line) {
+        std::stringstream ss(line);
+        std::string temp;
+        
+        std::getline(ss, bookingId, '|');
+        std::getline(ss, bookingDate, '|');
+        
+        if (std::getline(ss, temp, '|')) {
+            try { numberOfPeople = std::stoi(temp); } catch (...) { numberOfPeople = 0; }
         }
-        return *this;
+        
+        std::getline(ss, status, '|');
+        
+        // Read mapping IDs into the nested objects
+        std::getline(ss, customer.customerId, '|');
+        std::getline(ss, tour.tourId, '|');
+        std::getline(ss, employee.employeeId, '|');
+    }
+
+    /**
+     * @brief Equality operator for Booking comparison.
+     */
+    bool operator==(const Booking& other) const
+    {
+        return bookingId == other.bookingId &&
+               bookingDate == other.bookingDate &&
+               numberOfPeople == other.numberOfPeople &&
+               status == other.status &&
+               customer == other.customer &&
+               tour == other.tour &&
+               employee == other.employee;
+    }
+    
+    /**
+     * @brief Inequality operator for Booking comparison.
+     */
+    bool operator!=(const Booking& other) const
+    {
+        return !(*this == other);
     }
 };
 
-#endif // BOOKING_H
+#endif

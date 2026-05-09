@@ -1,30 +1,51 @@
-// ==========================================
-// File: models/Customer.h
-// Description: Data model cho Khách hàng
-// ==========================================
 #ifndef CUSTOMER_H
 #define CUSTOMER_H
 
 #include <string>
+#include <sstream>
 
 struct Customer {
     std::string customerId;
     std::string fullName;
     std::string phoneNumber;
     std::string email;
-    std::string address;
     
-    // Các trường phục vụ thống kê & nghiệp vụ
-    double totalSpent; // Tổng chi tiêu (để lọc Khách hàng VIP)
-    bool isDeleted;    // Xóa mềm (Soft delete) để không mất lịch sử Booking
+    /**
+     * @brief Serialize Customer to a string for file storage.
+     */
+    std::string toFileString() const {
+        return customerId + "|" + fullName + "|" + phoneNumber + "|" + email;
+    }
 
-    // Default Constructor
-    Customer() : totalSpent(0.0), isDeleted(false) {}
+    /**
+     * @brief Deserialize Customer from a file string.
+     */
+    void fromFileString(const std::string& line) {
+        std::stringstream ss(line);
+        std::getline(ss, customerId, '|');
+        std::getline(ss, fullName, '|');
+        std::getline(ss, phoneNumber, '|');
+        std::getline(ss, email, '|');
+    }
 
-    // Parameterized Constructor
-    Customer(std::string id, std::string name, std::string phone, std::string mail, std::string addr)
-        : customerId(id), fullName(name), phoneNumber(phone), email(mail), address(addr), 
-          totalSpent(0.0), isDeleted(false) {}
+    /**
+     * @brief Equality operator for Customer comparison.
+     */
+    bool operator==(const Customer& other) const
+    {
+        return customerId == other.customerId &&
+               fullName == other.fullName &&
+               phoneNumber == other.phoneNumber &&
+               email == other.email;
+    }
+    
+    /**
+     * @brief Inequality operator for Customer comparison.
+     */
+    bool operator!=(const Customer& other) const
+    {
+        return !(*this == other);
+    }
 };
 
-#endif // CUSTOMER_H
+#endif

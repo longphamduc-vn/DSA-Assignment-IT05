@@ -11,7 +11,8 @@ CXX = clang++
 # 2. Cờ biên dịch (Compile Flags)
 # -std=c++17: Sử dụng chuẩn C++17
 # -Wall -Wextra: Bật các cảnh báo lỗi để code an toàn hơn
-CXXFLAGS = -std=c++17 -Wall -Wextra
+# -Wno-unused-private-field: Tắt cảnh báo trường private không sử dụng trong Menu.h
+CXXFLAGS = -std=c++17 -Wall -Wextra -Wno-unused-private-field
 
 # 3. Tên file thực thi đầu ra
 TARGET = tour_app

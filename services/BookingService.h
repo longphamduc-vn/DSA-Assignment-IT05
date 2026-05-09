@@ -1,112 +1,207 @@
-// ==========================================
-// File: services/BookingService.h
-// Description: Nghiệp vụ quản lý Đơn đặt Tour, xử lý tương tác chéo với TourService
-// ==========================================
 #ifndef BOOKING_SERVICE_H
 #define BOOKING_SERVICE_H
 
+#include <string>
+#include <iostream>
 #include "GenericService.h"
-#include "TourService.h"
-#include "CustomerService.h"
-#include "EmployeeService.h"
 #include "../models/Booking.h"
+#include "../core/LinkedList.h"
 
+/**
+ * @brief Service class for managing Booking operations
+ */
 class BookingService : public GenericService<Booking>
 {
 public:
-    // --- 2.3. YÊU CẦU 2: TẠO VÀ XỬ LÝ BOOKING ---
-    // Tạo Booking mới: Tự động trừ AvailableSeats
-    bool createBooking(Booking &b, TourService &ts, CustomerService &cs, EmployeeService &es)
+    /**
+     * @brief Constructor
+     */
+    BookingService() {}
+
+    /**
+     * @brief Add a new booking
+     * @param booking The booking object to add
+     */
+    void addBooking(const Booking& booking)
     {
-        Tour *tour = ts.findById(b.tourId);
-        if (!tour || tour->availableSeats < b.passengerCount)
-            return false;
-
-        tour->availableSeats -= b.passengerCount;
-        b.totalAmount = b.passengerCount * tour->price;
-        b.status = "Confirmed";
-
-        // Cập nhật thống kê
-        cs.addTotalSpent(b.customerId, b.totalAmount);
-        es.addSale(b.employeeId, b.totalAmount);
-
-        repository.addLast(b);
-        return true;
+        addItem(booking);
     }
 
-    bool update([[maybe_unused]] const std::string &id, [[maybe_unused]] const Booking &updatedData) override
+    /**
+     * @brief Search for a booking by ID
+     * @param bookingId The ID to search for
+     * @return Pointer to the found booking node, nullptr if not found
+     */
+    Node<Booking>* findBookingById(const std::string& bookingId)
     {
-        
+        Node<Booking>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.bookingId == bookingId)
+            {
+                return current;
+            }
+            current = current->next;
+        }
+        return nullptr;
+    }
+
+    /**
+     * @brief Search for bookings by customer ID
+     * @param customerId The customer ID to search for
+     * @return LinkedList containing bookings for the specified customer
+     */
+    LinkedList<Booking> findBookingsByCustomerId(const std::string& customerId)
+    {
+        LinkedList<Booking> results;
+        Node<Booking>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.customer.customerId == customerId)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Search for bookings by tour ID
+     * @param tourId The tour ID to search for
+     * @return LinkedList containing bookings for the specified tour
+     */
+    LinkedList<Booking> findBookingsByTourId(const std::string& tourId)
+    {
+        LinkedList<Booking> results;
+        Node<Booking>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.tour.tourId == tourId)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Search for bookings by employee ID
+     * @param employeeId The employee ID to search for
+     * @return LinkedList containing bookings handled by the specified employee
+     */
+    LinkedList<Booking> findBookingsByEmployeeId(const std::string& employeeId)
+    {
+        LinkedList<Booking> results;
+        Node<Booking>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.employee.employeeId == employeeId)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Search for bookings by booking date
+     * @param bookingDate The booking date to search for
+     * @return LinkedList containing bookings on the specified date
+     */
+    LinkedList<Booking> findBookingsByDate(const std::string& bookingDate)
+    {
+        LinkedList<Booking> results;
+        Node<Booking>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.bookingDate == bookingDate)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Update an existing booking
+     * @param bookingId The ID of booking to update
+     * @param updatedBooking The updated booking data
+     * @return true if update was successful, false otherwise
+     */
+    bool updateBooking(const std::string& bookingId, const Booking& updatedBooking)
+    {
+        Node<Booking>* booking = findBookingById(bookingId);
+        if (booking != nullptr)
+        {
+            booking->data = updatedBooking;
+            return true;
+        }
         return false;
     }
 
-    bool remove(const std::string &id) override
+    /**
+     * @brief Get all bookings
+     * @return Pointer to the head of booking list
+     */
+    Node<Booking>* getAllBookings()
     {
-        return repository.removeIf([id](const Booking &b)
-                                   { return b.bookingId == id; });
+        return getAllItems();
     }
 
-    // Đổi trạng thái Booking và hoàn/trừ chỗ tương ứng
-    bool changeBookingStatus(const std::string &id, const std::string &newStatus, TourService &ts)
+    /**
+     * @brief Check if a booking exists
+     * @param bookingId The ID to check
+     * @return true if booking exists, false otherwise
+     */
+    bool bookingExists(const std::string& bookingId)
     {
-        Booking *b = repository.findIf([id](const Booking &book)
-                                       { return book.bookingId == id; });
-        if (!b)
-            return false;
-
-        if (b->status == "Confirmed" && newStatus == "Cancelled")
-        {
-            Tour *t = ts.findById(b->tourId);
-            if (t)
-                t->availableSeats += b->passengerCount; // Hoàn chỗ
-        }
-        b->status = newStatus;
-        return true;
+        return findBookingById(bookingId) != nullptr;
     }
 
-    // --- YÊU CẦU 3 & 4: TÌM KIẾM, SẮP XẾP ---
-    LinkedList<Booking> getBookingsByCustomer(const std::string &custId)
+    /**
+     * @brief Get total number of bookings
+     * @return Number of bookings
+     */
+    int getTotalBookings()
     {
-        return repository.filter([custId](const Booking &b)
-                                 { return b.customerId == custId; });
+        return getItemCount();
     }
 
-    void sortByTotalAmount()
-    {
-        repository.sort([](const Booking &a, const Booking &b)
-                        {
-                            return a.totalAmount > b.totalAmount; // Giảm dần
-                        });
-    }
-
-    void sortByBookingDate()
-    {
-        repository.sort([](const Booking &a, const Booking &b)
-                        {
-                            return a.bookingDate > b.bookingDate; // Mới nhất lên đầu
-                        });
-    }
-
-    // --- YÊU CẦU 6 & 7: THỐNG KÊ TỔNG HỢP ---
+    /**
+     * @brief Calculate total revenue from all bookings
+     * @return Total revenue
+     */
     double calculateTotalRevenue()
     {
-        double total = 0;
-        repository.forEach([&total](const Booking &b)
-                           {
-            if (b.status == "Confirmed") total += b.totalAmount; });
-        return total;
+        double totalRevenue = 0;
+        Node<Booking>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            totalRevenue += current->data.tour.price * current->data.numberOfPeople;
+            current = current->next;
+        }
+        return totalRevenue;
     }
 
-    double calculateCancellationRate()
+    /**
+     * @brief Get the total number of people booked across all bookings
+     * @return Total number of people
+     */
+    int getTotalPeopleBooked()
     {
-        if (repository.isEmpty())
-            return 0;
-        int cancelled = 0;
-        repository.forEach([&cancelled](const Booking &b)
-                           {
-            if (b.status == "Cancelled") cancelled++; });
-        return (double)cancelled / repository.getSize() * 100.0;
+        int totalPeople = 0;
+        Node<Booking>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            totalPeople += current->data.numberOfPeople;
+            current = current->next;
+        }
+        return totalPeople;
     }
 };
 
-#endif // BOOKING_SERVICE_H
+#endif

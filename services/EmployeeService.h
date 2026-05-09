@@ -1,51 +1,136 @@
-// ==========================================
-// File: services/EmployeeService.h
-// Description: Nghiệp vụ quản lý Nhân viên
-// ==========================================
 #ifndef EMPLOYEE_SERVICE_H
 #define EMPLOYEE_SERVICE_H
 
+#include <string>
+#include <iostream>
 #include "GenericService.h"
 #include "../models/Employee.h"
+#include "../core/LinkedList.h"
 
-class EmployeeService : public GenericService<Employee> {
+/**
+ * @brief Service class for managing Employee operations
+ */
+class EmployeeService : public GenericService<Employee>
+{
 public:
-    bool update(const std::string& id, const Employee& updatedData) override {
-        Employee* e = repository.findIf([id](const Employee& emp) { return emp.employeeId == id; });
-        if (e) {
-            *e = updatedData;
-            e->employeeId = id;
+    /**
+     * @brief Constructor
+     */
+    EmployeeService() {}
+
+    /**
+     * @brief Add a new employee
+     * @param employee The employee object to add
+     */
+    void addEmployee(const Employee& employee)
+    {
+        addItem(employee);
+    }
+
+    /**
+     * @brief Search for an employee by ID
+     * @param employeeId The ID to search for
+     * @return Pointer to the found employee node, nullptr if not found
+     */
+    Node<Employee>* findEmployeeById(const std::string& employeeId)
+    {
+        Node<Employee>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.employeeId == employeeId)
+            {
+                return current;
+            }
+            current = current->next;
+        }
+        return nullptr;
+    }
+
+    /**
+     * @brief Search for employees by name (partial match)
+     * @param name The name to search for
+     * @return LinkedList containing matching employees
+     */
+    LinkedList<Employee> findEmployeeByName(const std::string& name)
+    {
+        LinkedList<Employee> results;
+        Node<Employee>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.fullName.find(name) != std::string::npos)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Search for employees by position
+     * @param position The position to search for
+     * @return LinkedList containing employees with the specified position
+     */
+    LinkedList<Employee> findEmployeeByPosition(const std::string& position)
+    {
+        LinkedList<Employee> results;
+        Node<Employee>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.position == position)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Update an existing employee
+     * @param employeeId The ID of employee to update
+     * @param updatedEmployee The updated employee data
+     * @return true if update was successful, false otherwise
+     */
+    bool updateEmployee(const std::string& employeeId, const Employee& updatedEmployee)
+    {
+        Node<Employee>* employee = findEmployeeById(employeeId);
+        if (employee != nullptr)
+        {
+            employee->data = updatedEmployee;
             return true;
         }
         return false;
     }
 
-    bool remove(const std::string& id) override {
-        return repository.removeIf([id](const Employee& e) { return e.employeeId == id; });
+
+    /**
+     * @brief Get all employees
+     * @return Pointer to the head of employee list
+     */
+    Node<Employee>* getAllEmployees()
+    {
+        return getAllItems();
     }
 
-    void addSale(const std::string& id, double amount) {
-        Employee* e = repository.findIf([id](const Employee& emp) { return emp.employeeId == id; });
-        if (e) {
-            e->bookingCount++;
-            e->totalSales += amount;
-        }
+    /**
+     * @brief Check if an employee exists
+     * @param employeeId The ID to check
+     * @return true if employee exists, false otherwise
+     */
+    bool employeeExists(const std::string& employeeId)
+    {
+        return findEmployeeById(employeeId) != nullptr;
     }
 
-    void sortByPositionAndName() {
-        repository.sort([](const Employee& a, const Employee& b) {
-            if (a.position == b.position) return a.fullName < b.fullName;
-            return a.position < b.position;
-        });
-    }
-
-    Employee* getBestEmployee() {
-        Employee* best = nullptr;
-        repository.forEach([&best](Employee& e) {
-            if (!best || e.bookingCount > best->bookingCount) best = &e;
-        });
-        return best;
+    /**
+     * @brief Get total number of employees
+     * @return Number of employees
+     */
+    int getTotalEmployees()
+    {
+        return getItemCount();
     }
 };
 
-#endif // EMPLOYEE_SERVICE_H
+#endif

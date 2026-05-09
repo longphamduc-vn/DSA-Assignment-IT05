@@ -1,234 +1,237 @@
-// ==========================================
-// File: core/LinkedList.h
-// Author: Phạm Đức Long
-// Description: Advanced Generic Linked List Implementation 
-//              Includes O(N log N) Merge Sort and Lambda-based Iterators
-// ==========================================
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
 #include <iostream>
-#include <functional>
+#include <cstddef>
+#include "Node.h"
 
-// ==========================================
-// 1. Định nghĩa Cấu trúc Node
-// ==========================================
+/**
+ * @brief Enum to define where a new element should be placed in the list.
+ */
+typedef enum
+{
+    INSERT_HEAD,   // Add node at the beginning of the list
+    INSERT_TAIL,   // Add node at the end of the list
+    INSERT_AFTER   // Add node after a specific existing node
+} InsertMode;
+
+/**
+ * @brief A generic Singly Linked List class template.
+ * @tparam T The type of data stored in the list.
+ */
 template <typename T>
-struct Node {
-    T data;
-    Node<T>* next;
-
-    Node(T val) : data(val), next(nullptr) {}
-};
-
-// ==========================================
-// 2. Định nghĩa Lớp LinkedList
-// ==========================================
-template <typename T>
-class LinkedList {
+class LinkedList
+{
 private:
-    Node<T>* head;
-    Node<T>* tail;
-    int size;
-
-    // Các hàm Helper private hỗ trợ thuật toán Merge Sort trên Linked List
-    Node<T>* getMiddle(Node<T>* h) {
-        if (!h || !h->next) return h;
-        Node<T>* slow = h;
-        Node<T>* fast = h->next;
-        while (fast && fast->next) {
-            slow = slow->next;
-            fast = fast->next->next;
-        }
-        return slow;
-    }
-
-    Node<T>* merge(Node<T>* left, Node<T>* right, std::function<bool(const T&, const T&)> compare) {
-        if (!left) return right;
-        if (!right) return left;
-
-        Node<T>* result = nullptr;
-        // Gọi hàm so sánh được truyền vào để quyết định thứ tự
-        if (compare(left->data, right->data)) {
-            result = left;
-            result->next = merge(left->next, right, compare);
-        } else {
-            result = right;
-            result->next = merge(left, right->next, compare);
-        }
-        return result;
-    }
-
-    Node<T>* mergeSort(Node<T>* h, std::function<bool(const T&, const T&)> compare) {
-        if (!h || !h->next) return h;
-
-        Node<T>* middle = getMiddle(h);
-        Node<T>* nextToMiddle = middle->next;
-        middle->next = nullptr;
-
-        Node<T>* left = mergeSort(h, compare);
-        Node<T>* right = mergeSort(nextToMiddle, compare);
-
-        return merge(left, right, compare);
-    }
-
-
-    void updateTail() {
-        if (!head) {
-            tail = nullptr;
-            return;
-        }
-        Node<T>* current = head;
-        while (current->next != nullptr) {
-            current = current->next;
-        }
-        tail = current;
-    }
+    Node<T> *head; // Pointer to the first node in the list
 
 public:
-    // ==========================================
-    // Constructor & Destructor
-    // ==========================================
-    LinkedList() : head(nullptr), tail(nullptr), size(0) {}
+    /**
+     * @brief Constructor: Initializes an empty linked list.
+     */
+    LinkedList() : head(nullptr) {}
 
-    ~LinkedList() {
-        clear();
-    }
+    /**
+     * @brief Inserts a new element into the list based on the specified mode.
+     * @param data The value to be stored in the new node.
+     * @param mode The insertion strategy (HEAD, TAIL, or AFTER).
+     * @param afterNode Reference node for INSERT_AFTER mode (default is nullptr).
+     */
+    void insert(T data, InsertMode mode, Node<T> *afterNode = nullptr)
+    {
+        // Allocate memory for the new node
+        Node<T> *newNode = new Node<T>(data);
 
-    // ==========================================
-    // Thao tác Thêm (Insert)
-    // ==========================================
-    void addLast(const T& item) {
-        Node<T>* newNode = new Node<T>(item);
-        if (!head) {
-            head = tail = newNode;
-        } else {
-            tail->next = newNode;
-            tail = newNode;
-        }
-        size++;
-    }
-
-    void addFirst(const T& item) {
-        Node<T>* newNode = new Node<T>(item);
-        if (!head) {
-            head = tail = newNode;
-        } else {
+        switch (mode)
+        {
+        case INSERT_HEAD:
             newNode->next = head;
             head = newNode;
+            break;
+
+        case INSERT_TAIL:
+            if (head == nullptr) // List is empty
+            {
+                head = newNode;
+            }
+            else
+            {
+                Node<T> *lastNode = head;
+                // Traverse until the last node is reached
+                while (lastNode->next != nullptr)
+                {
+                    lastNode = lastNode->next;
+                }
+                lastNode->next = newNode;
+            }
+            break;
+
+        case INSERT_AFTER:
+            if (afterNode != nullptr)
+            {
+                newNode->next = afterNode->next;
+                afterNode->next = newNode;
+            }
+            else
+            {
+                // Clean up memory if no valid reference node is provided
+                delete newNode;
+            }
+            break;
         }
-        size++;
     }
 
-    // ==========================================
-    // Thao tác Xóa (Remove)
-    // ==========================================
-    // Xóa node đầu tiên thỏa mãn điều kiện truyền vào qua lambda
-    bool removeIf(std::function<bool(const T&)> condition) {
-        if (!head) return false;
+    /**
+     * @brief Returns a pointer to the head node of the list.
+     * @return Node<T>* Pointer to the head node or nullptr if list is empty.
+     */
+    Node<T>* getHead() const
+    {
+        return head;
+    }
 
-        // Nếu node cần xóa là node đầu
-        if (condition(head->data)) {
-            Node<T>* temp = head;
-            head = head->next;
-            delete temp;
-            size--;
-            if (!head) tail = nullptr;
-            return true;
-        }
-
-        Node<T>* current = head;
-        while (current->next != nullptr) {
-            if (condition(current->next->data)) {
-                Node<T>* temp = current->next;
-                current->next = current->next->next;
-                if (temp == tail) {
-                    tail = current;
-                }
-                delete temp;
-                size--;
-                return true;
-            }
+    /**
+     * @brief Prints all elements in the list to the standard output.
+     */
+    void display() const
+    {
+        Node<T> *current = head;
+        while (current != nullptr)
+        {
+            std::cout << current->data << " -> ";
             current = current->next;
         }
-        return false;
+        std::cout << "nullptr" << std::endl;
     }
 
-    void clear() {
-        Node<T>* current = head;
-        while (current != nullptr) {
-            Node<T>* nextNode = current->next;
-            delete current;
-            current = nextNode;
-        }
-        head = tail = nullptr;
-        size = 0;
+    /**
+     * @brief Checks if a value exists in the list.
+     * @param value The value to look for.
+     * @return true if the value exists, false otherwise.
+     */
+    bool exists(T value) const
+    {
+        return search(value) != nullptr;
     }
 
-    // ==========================================
-    // Thao tác Tìm kiếm (Search & Filter)
-    // ==========================================
-    // Tìm phần tử đầu tiên thỏa mãn điều kiện, trả về con trỏ tới data (nullptr nếu không thấy)
-    T* findIf(std::function<bool(const T&)> condition) const {
-        Node<T>* current = head;
-        while (current != nullptr) {
-            if (condition(current->data)) {
-                return &(current->data);
-            }
+    /**
+     * @brief Searches for the first occurrence of a value.
+     * @param value The value to look for.
+     * @return Node<T>* Pointer to the node if found, otherwise nullptr.
+     */
+    Node<T>* search(T value) const
+    {
+        Node<T> *current = head;
+        while (current != nullptr)
+        {
+            if (current->data == value) return current;
             current = current->next;
         }
         return nullptr;
     }
 
-    // Lọc ra một danh sách mới chứa tất cả các phần tử thỏa mãn điều kiện
-    LinkedList<T> filter(std::function<bool(const T&)> condition) const {
-        LinkedList<T> resultList;
-        Node<T>* current = head;
-        while (current != nullptr) {
-            if (condition(current->data)) {
-                resultList.addLast(current->data);
-            }
+    /**
+     * @brief Removes the first node containing the specified value.
+     * @param value The value to be deleted.
+     * @return true if an element was removed, false otherwise.
+     */
+    bool remove(T value)
+    {
+        if (head == nullptr) return false;
+
+        // Handle deletion at the head specifically
+        if (head->data == value)
+        {
+            Node<T> *temp = head;
+            head = head->next;
+            delete temp;
+            return true;
+        }
+
+        Node<T> *current = head;
+        // Search for the node preceding the one to be deleted
+        while (current->next != nullptr && current->next->data != value)
+        {
             current = current->next;
         }
-        return resultList;
+
+        if (current->next != nullptr)
+        {
+            Node<T> *targetNode = current->next;
+            current->next = targetNode->next; // Bypass the target node
+            delete targetNode;                // Free memory
+            return true;
+        }
+
+        return false;
     }
 
-    // ==========================================
-    // Thao tác Sắp xếp (Sort) - Yêu cầu 4
-    // ==========================================
-    // Sắp xếp danh sách sử dụng Merge Sort O(N log N) dựa trên lambda so sánh
-    void sort(std::function<bool(const T&, const T&)> compare) {
-        if (!head || !head->next) return;
-        head = mergeSort(head, compare);
-        updateTail();
-    }
+    
 
-    // ==========================================
-    // Thao tác Lặp (Iteration)
-    // ==========================================
-    // Duyệt qua toàn bộ danh sách và thực thi một hàm (dùng để in hoặc tính tổng)
-    void forEach(std::function<void(T&)> action) {
-        Node<T>* current = head;
-        while (current != nullptr) {
-            action(current->data);
+    /**
+     * @brief Retrieves the element at a specific index.
+     * @param index The position of the element (0-based).
+     * @return T The value at the specified index.
+     * @throw std::out_of_range if index is out of bounds.
+     */
+    T getAt(size_t index) const
+    {
+        Node<T> *current = head;
+        size_t count = 0;
+        while (current != nullptr && count < index)
+        {
             current = current->next;
+            count++;
+        }
+        if (current == nullptr)
+        {
+            throw std::out_of_range("Index out of bounds");
+        }
+        return current->data;
+    }
+
+    /**
+     * @brief Calculates the total number of elements in the list.
+     * @return size_t The current size of the list.
+     */
+    size_t getSize() const
+    {
+        size_t count = 0;
+        Node<T> *temp = head;
+        while (temp != nullptr)
+        {
+            count++;
+            temp = temp->next;
+        }
+        return count;
+    }
+
+    /**
+     * @brief Clears all elements from the list.
+     */
+    void clear()
+    {
+        while (head != nullptr)
+        {
+            Node<T> *temp = head;
+            head = head->next;
+            delete temp;
         }
     }
 
-    void forEach(std::function<void(const T&)> action) const {
-        Node<T>* current = head;
-        while (current != nullptr) {
-            action(current->data);
-            current = current->next;
+    /**
+     * @brief Destructor: Ensures all dynamically allocated nodes are deleted.
+     */
+    ~LinkedList()
+    {
+        Node<T> *temp = head;
+        while (temp != nullptr)
+        {
+            Node<T> *nextNode = temp->next;
+            delete temp;
+            temp = nextNode;
         }
     }
-
-    // ==========================================
-    // Getter
-    // ==========================================
-    Node<T>* getHead() const { return head; }
-    int getSize() const { return size; }
-    bool isEmpty() const { return size == 0; }
 };
 
 #endif

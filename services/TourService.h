@@ -1,92 +1,156 @@
-// ==========================================
-// File: services/TourService.h
-// Description: Nghiệp vụ quản lý Tour Du lịch
-// ==========================================
 #ifndef TOUR_SERVICE_H
 #define TOUR_SERVICE_H
 
+#include <string>
+#include <iostream>
 #include "GenericService.h"
 #include "../models/Tour.h"
+#include "../core/LinkedList.h"
 
-class TourService : public GenericService<Tour> {
+/**
+ * @brief Service class for managing Tour operations
+ */
+class TourService : public GenericService<Tour>
+{
 public:
-    // --- 2.1. YÊU CẦU 2: CRUD ---
-    bool update(const std::string& id, const Tour& updatedData) override {
-        Tour* tour = repository.findIf([id](const Tour& t) { return t.tourId == id; });
-        if (tour) {
-            *tour = updatedData;
-            tour->tourId = id; // Không cho phép đổi ID
+    /**
+     * @brief Constructor
+     */
+    TourService() {}
+
+    /**
+     * @brief Add a new tour
+     * @param tour The tour object to add
+     */
+    void addTour(const Tour& tour)
+    {
+        addItem(tour);
+    }
+
+    /**
+     * @brief Search for a tour by ID
+     * @param tourId The ID to search for
+     * @return Pointer to the found tour node, nullptr if not found
+     */
+    Node<Tour>* findTourById(const std::string& tourId)
+    {
+        Node<Tour>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.tourId == tourId)
+            {
+                return current;
+            }
+            current = current->next;
+        }
+        return nullptr;
+    }
+
+    /**
+     * @brief Search for tours by destination (partial match)
+     * @param destination The destination to search for
+     * @return LinkedList containing matching tours
+     */
+    LinkedList<Tour> findTourByDestination(const std::string& destination)
+    {
+        LinkedList<Tour> results;
+        Node<Tour>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.destination.find(destination) != std::string::npos)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Search for tours by name
+     * @param tourName The tour name to search for
+     * @return LinkedList containing matching tours
+     */
+    LinkedList<Tour> findTourByName(const std::string& tourName)
+    {
+        LinkedList<Tour> results;
+        Node<Tour>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.tourName.find(tourName) != std::string::npos)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Find tours within a price range
+     * @param minPrice The minimum price
+     * @param maxPrice The maximum price
+     * @return LinkedList containing tours within the price range
+     */
+    LinkedList<Tour> findTourByPriceRange(double minPrice, double maxPrice)
+    {
+        LinkedList<Tour> results;
+        Node<Tour>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.price >= minPrice && current->data.price <= maxPrice)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
+     * @brief Update an existing tour
+     * @param tourId The ID of tour to update
+     * @param updatedTour The updated tour data
+     * @return true if update was successful, false otherwise
+     */
+    bool updateTour(const std::string& tourId, const Tour& updatedTour)
+    {
+        Node<Tour>* tour = findTourById(tourId);
+        if (tour != nullptr)
+        {
+            tour->data = updatedTour;
             return true;
         }
         return false;
     }
 
-    bool remove(const std::string& id) override {
-        // Lưu ý: Logic kiểm tra "chưa có Booking nào" sẽ được xử lý ở Menu/Controller
-        // bằng cách gọi BookingService kiểm tra trước khi gọi hàm này.
-        return repository.removeIf([id](const Tour& t) { return t.tourId == id; });
+    /**
+     * @brief Get all tours
+     * @return Pointer to the head of tour list
+     */
+    Node<Tour>* getAllTours()
+    {
+        return getAllItems();
     }
 
-    Tour* findById(const std::string& id) {
-        return repository.findIf([id](const Tour& t) { return t.tourId == id; });
+    /**
+     * @brief Check if a tour exists
+     * @param tourId The ID to check
+     * @return true if tour exists, false otherwise
+     */
+    bool tourExists(const std::string& tourId)
+    {
+        return findTourById(tourId) != nullptr;
     }
 
-    // --- 3. YÊU CẦU 3: TÌM KIẾM ---
-    LinkedList<Tour> searchByPriceRange(double minPrice, double maxPrice) {
-        return repository.filter([minPrice, maxPrice](const Tour& t) {
-            return t.price >= minPrice && t.price <= maxPrice;
-        });
-    }
-
-    LinkedList<Tour> searchByDepartureDate(const std::string& date) {
-        return repository.filter([date](const Tour& t) { return t.departureDate == date; });
-    }
-
-    LinkedList<Tour> searchByDestination(const std::string& dest) {
-        return repository.filter([dest](const Tour& t) { 
-            return t.destination.find(dest) != std::string::npos; 
-        });
-    }
-
-    // --- 4. YÊU CẦU 4: SẮP XẾP ---
-    void sortByPrice(bool ascending = true) {
-        repository.sort([ascending](const Tour& a, const Tour& b) {
-            return ascending ? (a.price < b.price) : (a.price > b.price);
-        });
-    }
-
-    void sortByDepartureDate() {
-        // Chuỗi YYYY-MM-DD có thể so sánh trực tiếp bằng toán tử <
-        repository.sort([](const Tour& a, const Tour& b) {
-            return a.departureDate < b.departureDate;
-        });
-    }
-
-    // --- 5 & 6 & 7. YÊU CẦU THỐNG KÊ, MIN/MAX ---
-    Tour* getMostExpensiveTour() {
-        Tour* maxTour = nullptr;
-        repository.forEach([&maxTour](Tour& t) {
-            if (!maxTour || t.price > maxTour->price) maxTour = &t;
-        });
-        return maxTour;
-    }
-
-    int countTotalAvailableSeats() {
-        int total = 0;
-        repository.forEach([&total](const Tour& t) { total += t.availableSeats; });
-        return total;
-    }
-
-    double getAveragePrice() {
-        if (repository.isEmpty()) return 0;
-        double sum = 0;
-        repository.forEach([&sum](const Tour& t) { sum += t.price; });
-        return sum / repository.getSize();
-    }
-
-    LinkedList<Tour> getSoldOutTours() {
-        return repository.filter([](const Tour& t) { return t.availableSeats == 0; });
+    /**
+     * @brief Get total number of tours
+     * @return Number of tours
+     */
+    int getTotalTours()
+    {
+        return getItemCount();
     }
 };
 
-#endif // TOUR_SERVICE_H
+#endif

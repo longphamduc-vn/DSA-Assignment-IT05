@@ -1,0 +1,39 @@
+@startuml
+title ERP UML - Tour Booking Management
+
+class Customer {
+  - customerId : String
+  - fullName : String
+  - phoneNumber : String
+  - email : String
+  + displayInfo() : void
+}
+
+class Employee {
+  - employeeId : String
+  - fullName : String
+  - position : String
+  + displayInfo() : void
+}
+
+class Tour {
+  - tourId : String
+  - tourName : String
+  - destination : String
+  - price : double
+  - durationDays : int
+  + displayInfo() : void
+}
+
+class Booking {
+  - bookingId : String
+  - bookingDate : String
+  - numberOfPeople : int
+  + displayInfo() : void
+}
+
+Customer "1" --> "0..*" Booking : makes
+Employee "1" --> "0..*" Booking : handles
+Tour "1" --> "0..*" Booking : is booked in
+
+@enduml

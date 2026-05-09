@@ -1,28 +1,68 @@
-// ==========================================
-// File: models/Tour.h
-// Description: Data model cho Tour du lịch
-// ==========================================
 #ifndef TOUR_H
 #define TOUR_H
 
 #include <string>
+#include <sstream>
 
 struct Tour {
     std::string tourId;
+    std::string tourName;
     std::string destination;
     double price;
-    int maxCapacity;
+    int durationDays;
     int availableSeats;
-    std::string departureDate; // Format đề xuất: YYYY-MM-DD để dễ sắp xếp
-    std::string status;        // "Open", "Upcoming", "Cancelled"
+    
+    /**
+     * @brief Serialize Tour to a string for file storage.
+     */
+    std::string toFileString() const {
+        return tourId + "|" + tourName + "|" + destination + "|" + 
+               std::to_string(price) + "|" + std::to_string(durationDays) + "|" + 
+               std::to_string(availableSeats);
+    }
 
-    // Default Constructor
-    Tour() : price(0.0), maxCapacity(0), availableSeats(0), status("Open") {}
+    /**
+     * @brief Deserialize Tour from a file string.
+     */
+    void fromFileString(const std::string& line) {
+        std::stringstream ss(line);
+        std::string temp;
+        
+        std::getline(ss, tourId, '|');
+        std::getline(ss, tourName, '|');
+        std::getline(ss, destination, '|');
+        
+        if (std::getline(ss, temp, '|')) {
+            try { price = std::stod(temp); } catch (...) { price = 0.0; }
+        }
+        if (std::getline(ss, temp, '|')) {
+            try { durationDays = std::stoi(temp); } catch (...) { durationDays = 0; }
+        }
+        if (std::getline(ss, temp, '|')) {
+            try { availableSeats = std::stoi(temp); } catch (...) { availableSeats = 0; }
+        }
+    }
 
-    // Parameterized Constructor
-    Tour(std::string id, std::string dest, double p, int cap, std::string date)
-        : tourId(id), destination(dest), price(p), maxCapacity(cap), 
-          availableSeats(cap), departureDate(date), status("Open") {}
+    /**
+     * @brief Equality operator for Tour comparison.
+     */
+    bool operator==(const Tour& other) const
+    {
+        return tourId == other.tourId &&
+               tourName == other.tourName &&
+               destination == other.destination &&
+               price == other.price &&
+               durationDays == other.durationDays &&
+               availableSeats == other.availableSeats;
+    }
+    
+    /**
+     * @brief Inequality operator for Tour comparison.
+     */
+    bool operator!=(const Tour& other) const
+    {
+        return !(*this == other);
+    }
 };
 
-#endif // TOUR_H
+#endif
