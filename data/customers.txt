@@ -1,0 +1,6 @@
+C001|Nguyen Van A|0123456789|a@example.com
+C002|Tran Thi B|0987654321|b@example.com
+C003|Le Van C|0345678901|c@example.com
+C004|Pham Thi D|0567890123|d@example.com
+C005|Hoang Van E|0905123456|e@example.com
+C006|Vu Thi F|0914987654|f@example.com

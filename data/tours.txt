@@ -1,0 +1,4 @@
+T001|Tour Ha Noi|Ha Noi|5000000|3|20
+T002|Tour Sai Gon|Sai Gon|4000000|2|15
+T003|Tour Da Nang|Da Nang|6000000|4|25
+T004|Tour Hoi An|Hoi An|4500000|3|18

@@ -1,0 +1,4 @@
+E001|Pham Duc Long|Manager|0111111111|long@example.com
+E002|Le Thi E|Staff|0222222222|e@example.com
+E003|Tran Van F|Guide|0333333333|f@example.com
+E004|Nguyen Van G|Staff|0444444444|g@example.com

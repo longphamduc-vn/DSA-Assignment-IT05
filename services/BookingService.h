@@ -172,6 +172,41 @@ public:
     }
 
     /**
+     * @brief Delete a booking by ID
+     * @param bookingId The ID of the booking to delete
+     * @return true if the booking was removed, false otherwise
+     */
+    bool deleteBooking(const std::string& bookingId)
+    {
+        Node<Booking>* booking = findBookingById(bookingId);
+        if (booking == nullptr) return false;
+        return dataList.remove(booking->data);
+    }
+
+    /**
+     * @brief Search bookings by keyword in booking ID, customer ID, or tour ID
+     * @param keyword Keyword to search for
+     * @return LinkedList containing matching bookings
+     */
+    LinkedList<Booking> searchBookings(const std::string& keyword)
+    {
+        LinkedList<Booking> results;
+        Node<Booking>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.bookingId.find(keyword) != std::string::npos ||
+                current->data.customer.customerId.find(keyword) != std::string::npos ||
+                current->data.tour.tourId.find(keyword) != std::string::npos ||
+                current->data.bookingDate.find(keyword) != std::string::npos)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
+
+    /**
      * @brief Calculate total revenue from all bookings
      * @return Total revenue
      */

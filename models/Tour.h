@@ -4,42 +4,57 @@
 #include <string>
 #include <sstream>
 
+using namespace std;
+
 struct Tour {
-    std::string tourId;
-    std::string tourName;
-    std::string destination;
+    string tourId;
+    string tourName;
+    string destination;
     double price;
     int durationDays;
     int availableSeats;
+    int maxCapacity;
+    string departureDate;
+    string status;
     
     /**
      * @brief Serialize Tour to a string for file storage.
      */
-    std::string toFileString() const {
+    string toFileString() const {
         return tourId + "|" + tourName + "|" + destination + "|" + 
-               std::to_string(price) + "|" + std::to_string(durationDays) + "|" + 
-               std::to_string(availableSeats);
+               to_string(price) + "|" + to_string(durationDays) + "|" + 
+               to_string(availableSeats) + "|" + to_string(maxCapacity) + "|" +
+               departureDate + "|" + status;
     }
 
     /**
      * @brief Deserialize Tour from a file string.
      */
-    void fromFileString(const std::string& line) {
-        std::stringstream ss(line);
-        std::string temp;
+    void fromFileString(const string& line) {
+        stringstream ss(line);
+        string temp;
         
-        std::getline(ss, tourId, '|');
-        std::getline(ss, tourName, '|');
-        std::getline(ss, destination, '|');
+        getline(ss, tourId, '|');
+        getline(ss, tourName, '|');
+        getline(ss, destination, '|');
         
-        if (std::getline(ss, temp, '|')) {
-            try { price = std::stod(temp); } catch (...) { price = 0.0; }
+        if (getline(ss, temp, '|')) {
+            try { price = stod(temp); } catch (...) { price = 0.0; }
         }
-        if (std::getline(ss, temp, '|')) {
-            try { durationDays = std::stoi(temp); } catch (...) { durationDays = 0; }
+        if (getline(ss, temp, '|')) {
+            try { durationDays = stoi(temp); } catch (...) { durationDays = 0; }
         }
-        if (std::getline(ss, temp, '|')) {
-            try { availableSeats = std::stoi(temp); } catch (...) { availableSeats = 0; }
+        if (getline(ss, temp, '|')) {
+            try { availableSeats = stoi(temp); } catch (...) { availableSeats = 0; }
+        }
+        if (getline(ss, temp, '|')) {
+            try { maxCapacity = stoi(temp); } catch (...) { maxCapacity = 0; }
+        }
+        if (getline(ss, departureDate, '|')) {
+            // departureDate read successfully
+        }
+        if (getline(ss, status, '|')) {
+            // status read successfully
         }
     }
 

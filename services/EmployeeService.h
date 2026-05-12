@@ -131,6 +131,40 @@ public:
     {
         return getItemCount();
     }
+
+    /**
+     * @brief Delete an employee by ID
+     * @param employeeId The ID of the employee to delete
+     * @return true if the employee was removed, false otherwise
+     */
+    bool deleteEmployee(const std::string& employeeId)
+    {
+        Node<Employee>* employee = findEmployeeById(employeeId);
+        if (employee == nullptr) return false;
+        return dataList.remove(employee->data);
+    }
+
+    /**
+     * @brief Search employees by keyword in ID, name, or position
+     * @param keyword Keyword to search for
+     * @return LinkedList containing matching employees
+     */
+    LinkedList<Employee> searchEmployees(const std::string& keyword)
+    {
+        LinkedList<Employee> results;
+        Node<Employee>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.employeeId.find(keyword) != std::string::npos ||
+                current->data.fullName.find(keyword) != std::string::npos ||
+                current->data.position.find(keyword) != std::string::npos)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
 };
 
 #endif

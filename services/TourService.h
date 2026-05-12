@@ -151,6 +151,40 @@ public:
     {
         return getItemCount();
     }
+
+    /**
+     * @brief Delete a tour by ID
+     * @param tourId The ID of the tour to delete
+     * @return true if the tour was removed, false otherwise
+     */
+    bool deleteTour(const std::string& tourId)
+    {
+        Node<Tour>* tourNode = findTourById(tourId);
+        if (tourNode == nullptr) return false;
+        return dataList.remove(tourNode->data);
+    }
+
+    /**
+     * @brief Search tours by keyword in ID, name, or destination
+     * @param keyword Keyword to search for
+     * @return LinkedList containing matching tours
+     */
+    LinkedList<Tour> searchTours(const std::string& keyword)
+    {
+        LinkedList<Tour> results;
+        Node<Tour>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.tourId.find(keyword) != std::string::npos ||
+                current->data.tourName.find(keyword) != std::string::npos ||
+                current->data.destination.find(keyword) != std::string::npos)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
 };
 
 #endif

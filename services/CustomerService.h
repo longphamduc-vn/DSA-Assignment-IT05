@@ -110,6 +110,40 @@ public:
     {
         return getItemCount();
     }
+
+    /**
+     * @brief Delete a customer by ID
+     * @param customerId The ID of the customer to delete
+     * @return true if the customer was removed, false otherwise
+     */
+    bool deleteCustomer(const std::string& customerId)
+    {
+        Node<Customer>* customer = findCustomerById(customerId);
+        if (customer == nullptr) return false;
+        return dataList.remove(customer->data);
+    }
+
+    /**
+     * @brief Search customers by keyword in ID, name, or email
+     * @param keyword Keyword to search for
+     * @return LinkedList containing matching customers
+     */
+    LinkedList<Customer> searchCustomers(const std::string& keyword)
+    {
+        LinkedList<Customer> results;
+        Node<Customer>* current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.customerId.find(keyword) != std::string::npos ||
+                current->data.fullName.find(keyword) != std::string::npos ||
+                current->data.email.find(keyword) != std::string::npos)
+            {
+                results.insert(current->data, INSERT_TAIL);
+            }
+            current = current->next;
+        }
+        return results;
+    }
 };
 
 #endif

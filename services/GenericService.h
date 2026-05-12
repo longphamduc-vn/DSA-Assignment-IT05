@@ -3,6 +3,7 @@
 
 #include <string>
 #include "../core/LinkedList.h"
+#include "../utils/FileIO.h"
 
 /**
  * @brief Generic Service template class providing common CRUD operations
@@ -95,6 +96,24 @@ public:
     const LinkedList<T>& getRepository() const
     {
         return dataList;
+    }
+
+    /**
+     * @brief Save the repository list to a file
+     * @param filename The path to the output file
+     */
+    void saveToFile(const std::string& filename)
+    {
+        FileIO::saveList<T>(filename, dataList);
+    }
+
+    /**
+     * @brief Load items from a file into the repository
+     * @param filename The path to the input file
+     */
+    void loadFromFile(const std::string& filename)
+    {
+        FileIO::loadList<T>(filename, dataList);
     }
 };
 
