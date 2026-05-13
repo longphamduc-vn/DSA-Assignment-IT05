@@ -1,6 +1,6 @@
 // ==========================================
 // File: utils/ConsoleUI.h
-// Description: Giao diện hiển thị bảng, nhập liệu và tiện ích Console
+// Description: UI for tables, data entry, and Console utilities
 // ==========================================
 #ifndef CONSOLE_UI_H
 #define CONSOLE_UI_H
@@ -8,131 +8,195 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include <limits> // Thêm thư viện này để dùng numeric_limits cho cin.ignore()
+#include <limits>
 #include "../core/LinkedList.h"
 #include "../models/Tour.h"
 #include "../models/Customer.h"
 #include "../models/Booking.h"
+#include "../models/Employee.h"
 
-class ConsoleUI {
+class ConsoleUI
+{
 public:
-    // ==========================================
-    // 1. Các tiện ích màn hình
-    // ==========================================
-    static void clearScreen() {
-        #if defined(_WIN32)
-            system("cls");
-        #else
-            system("clear");
-        #endif
+    // Helper for numeric validation to prevent "input lag/crash" if user enters text
+    static void inputSafeInt(int &value, const std::string &prompt)
+    {
+        std::cout << prompt;
+        while (!(std::cin >> value))
+        {
+            std::cout << "-> Error: Please enter a valid integer. Try again: ";
+            std::cin.clear();                                                   // Clear error flags
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard buffer
+        }
     }
 
-    static void pauseScreen() {
-        std::cout << "\nNhan Enter de tiep tuc...";
+    static void InputSafeString(std::string &value, const std::string &prompt)
+    {
+        std::cout << prompt;
+        std::getline(std::cin, value);
+        while (value.empty())
+        {
+            std::cout << "-> Error: Input cannot be empty. Try again: ";
+            std::getline(std::cin, value);
+        }
+    }
+    static void inputSafeDouble(double &value, const std::string &prompt)
+    {
+        std::cout << prompt;
+        while (!(std::cin >> value))
+        {
+            std::cout << "-> Error: Please enter a valid decimal number. Try again: ";
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+    }
+
+    // ==========================================
+    // 1. Screen Utilities
+    // ==========================================
+    static void successMessage(const std::string &message)
+    {
+        std::cout << ">> " << message << "\n";
+    }
+
+        static void errorMessage(const std::string &message)
+        {
+            std::cout << "!! " << message << "\n";
+        }
+    static void clearScreen()
+    {
+        std::cout << "\033[2J\033[1;1H";
+#if defined(_WIN32)
+        system("cls");
+#else
+        system("clear");
+#endif
+    }
+    static void clearBuffer()
+    {
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
+    static void pauseScreen()
+    {
+        std::cout << "\nPress Enter to continue...";
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cin.get();
     }
 
-    static void printLine(int length = 80, char ch = '-') {
+    static void printLine(int length = 85, char ch = '-')
+    {
         std::cout << std::string(length, ch) << "\n";
     }
 
-    static void printEmployeeTable(const LinkedList<Employee>& list) {
-        if (list.getSize() == 0) {
-            std::cout << "-> Danh sach Nhan vien hien tai dang trong.\n";
+    // ==========================================
+    // 2. Data Tables (Output)
+    // ==========================================
+
+    static void printEmployeeTable(const LinkedList<Employee> &list)
+    {
+        if (list.getSize() == 0)
+        {
+            std::cout << "-> Employee list is currently empty.\n";
             return;
         }
 
-        printLine(50, '=');
-        std::cout << std::left << std::setw(10) << "ID" 
-                  << std::setw(25) << "Ho va Ten" 
-                  << std::setw(15) << "Chuc vu" << "\n";
-        printLine(50, '-');
+        printLine(60, '=');
+        std::cout << std::left << std::setw(10) << "ID"
+                  << std::setw(30) << "Full Name"
+                  << std::setw(20) << "Position" << "\n";
+        printLine(60, '-');
 
-        Node<Employee>* current = list.getHead();
-        while (current != nullptr) {
-            const Employee& e = current->data;
+        Node<Employee> *current = list.getHead();
+        while (current != nullptr)
+        {
+            const Employee &e = current->data;
             std::cout << std::left << std::setw(10) << e.employeeId
-                      << std::setw(25) << e.fullName
-                      << std::setw(15) << e.position << "\n";
+                      << std::setw(30) << e.fullName
+                      << std::setw(20) << e.position << "\n";
             current = current->next;
         }
-        printLine(50, '=');
+        printLine(60, '=');
     }
-    // ==========================================
-    // 2. Các hàm vẽ bảng dữ liệu (Output)
-    // ==========================================
-    
-    // In danh sách Tour
-    static void printTourTable(const LinkedList<Tour>& list) {
-        if (list.getSize() == 0) {
-            std::cout << "-> Danh sach Tour hien tai dang trong.\n";
+
+    static void printTourTable(const LinkedList<Tour> &list)
+    {
+        if (list.getSize() == 0)
+        {
+            std::cout << "-> Tour list is currently empty.\n";
             return;
         }
 
-        printLine(63, '=');
-        std::cout << std::left << std::setw(8) << "ID" 
-                  << std::setw(20) << "Diem den" 
-                  << std::setw(15) << "Gia (VND)" 
-                  << std::setw(10) << "Con trong" << "\n";
-        printLine(63, '-');
+        printLine(75, '=');
+        std::cout << std::left << std::setw(8) << "ID"
+                  << std::setw(25) << "Destination"
+                  << std::setw(15) << "Price ($)"
+                  << std::setw(12) << "Available"
+                  << std::setw(10) << "Status" << "\n";
+        printLine(75, '-');
 
-        Node<Tour>* current = list.getHead();
-        while (current != nullptr) {
-            const Tour& t = current->data;
+        Node<Tour> *current = list.getHead();
+        while (current != nullptr)
+        {
+            const Tour &t = current->data;
             std::cout << std::left << std::setw(8) << t.tourId
-                      << std::setw(20) << t.destination
-                      << std::setw(15) << std::fixed << std::setprecision(0) << t.price
-                      << std::setw(10) << t.availableSeats << "\n";
+                      << std::setw(25) << t.destination
+                      << std::setw(15) << std::fixed << std::setprecision(2) << t.price
+                      << std::setw(12) << t.availableSeats
+                      << std::setw(10) << t.status << "\n";
             current = current->next;
         }
-        printLine(63, '=');
+        printLine(75, '=');
     }
 
-    // In danh sách Khách hàng
-    static void printCustomerTable(const LinkedList<Customer>& list) {
-        if (list.getSize() == 0) {
-            std::cout << "-> Danh sach Khach hang hien tai dang trong.\n";
+    static void printCustomerTable(const LinkedList<Customer> &list)
+    {
+        if (list.getSize() == 0)
+        {
+            std::cout << "-> Customer list is currently empty.\n";
             return;
         }
 
-        printLine(70, '=');
-        std::cout << std::left << std::setw(10) << "ID" 
-                  << std::setw(25) << "Ho va Ten" 
-                  << std::setw(15) << "So dien thoai" 
-                  << std::setw(20) << "Email" << "\n";
-        printLine(70, '-');
+        printLine(85, '=');
+        std::cout << std::left << std::setw(10) << "ID"
+                  << std::setw(25) << "Full Name"
+                  << std::setw(20) << "Phone Number"
+                  << std::setw(25) << "Email" << "\n";
+        printLine(85, '-');
 
-        Node<Customer>* current = list.getHead();
-        while (current != nullptr) {
-            const Customer& c = current->data;
+        Node<Customer> *current = list.getHead();
+        while (current != nullptr)
+        {
+            const Customer &c = current->data;
             std::cout << std::left << std::setw(10) << c.customerId
                       << std::setw(25) << c.fullName
-                      << std::setw(15) << c.phoneNumber
-                      << std::setw(20) << c.email << "\n";
+                      << std::setw(20) << c.phoneNumber
+                      << std::setw(25) << c.email << "\n";
             current = current->next;
         }
-        printLine(70, '=');
+        printLine(85, '=');
     }
 
-    // In danh sách Booking
-    static void printBookingTable(const LinkedList<Booking>& list) {
-        if (list.getSize() == 0) {
-            std::cout << "-> Khong co du lieu Booking.\n";
+    static void printBookingTable(const LinkedList<Booking> &list)
+    {
+        if (list.getSize() == 0)
+        {
+            std::cout << "-> No booking records found.\n";
             return;
         }
 
-        printLine(80, '=');
-        std::cout << std::left << std::setw(10) << "Book ID" 
-                  << std::setw(10) << "Khach ID" 
-                  << std::setw(10) << "Tour ID" 
-                  << std::setw(10) << "So khach" 
-                  << std::setw(15) << "Ngay dat" 
-                  << std::setw(15) << "Trang thai" << "\n";
-        printLine(80, '-');
+        printLine(85, '=');
+        std::cout << std::left << std::setw(10) << "BookID"
+                  << std::setw(10) << "CustID"
+                  << std::setw(10) << "TourID"
+                  << std::setw(10) << "Guests"
+                  << std::setw(15) << "Book Date"
+                  << std::setw(15) << "Status" << "\n";
+        printLine(85, '-');
 
-        Node<Booking>* current = list.getHead();
-        while (current != nullptr) {
-            const Booking& b = current->data;
+        Node<Booking> *current = list.getHead();
+        while (current != nullptr)
+        {
+            const Booking &b = current->data;
             std::cout << std::left << std::setw(10) << b.bookingId
                       << std::setw(10) << b.customer.customerId
                       << std::setw(10) << b.tour.tourId
@@ -141,107 +205,7 @@ public:
                       << std::setw(15) << b.status << "\n";
             current = current->next;
         }
-        printLine(80, '=');
-    }
-
-    // ==========================================
-    // 3. Các hàm nhập dữ liệu (Input)
-    // ==========================================
-
-    // Nhập thông tin Tour
-    static Tour inputTour() {
-        Tour t;
-        std::cout << "\n--- NHAP THONG TIN TOUR ---\n";
-        std::cout << "Nhap ID Tour: ";
-        std::cin >> t.tourId;
-        
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Xóa bộ đệm
-        std::cout << "Nhap Ten Tour: ";
-        std::getline(std::cin, t.tourName);
-        
-        std::cout << "Nhap Diem den: ";
-        std::getline(std::cin, t.destination);
-        
-        std::cout << "Nhap Gia (VND): ";
-        std::cin >> t.price;
-        
-        std::cout << "Nhap So ngay: ";
-        std::cin >> t.durationDays;
-        
-        std::cout << "Nhap So cho con trong: ";
-        std::cin >> t.availableSeats;
-        
-        std::cout << "Nhap Suc chua toi da: ";
-        std::cin >> t.maxCapacity;
-        
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Nhap Ngay khoi hanh (DD/MM/YYYY): ";
-        std::getline(std::cin, t.departureDate);
-        
-        std::cout << "Nhap Trang thai (active/inactive): ";
-        std::getline(std::cin, t.status);
-        
-        return t;
-    }
-
-    static Employee inputEmployee() {
-        Employee e;
-        std::cout << "\n--- NHAP THONG TIN NHAN VIEN ---\n";
-        std::cout << "Nhap ID Nhan vien: ";
-        std::cin >> e.employeeId;
-        
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Nhap Ho va Ten: ";
-        std::getline(std::cin, e.fullName);
-        
-        std::cout << "Nhap Chuc vu: ";
-        std::getline(std::cin, e.position);
-        
-        return e;
-    }
-
-    // Nhập thông tin Khách hàng
-    static Customer inputCustomer() {
-        Customer c;
-        std::cout << "\n--- NHAP THONG TIN KHACH HANG ---\n";
-        std::cout << "Nhap ID Khach hang: ";
-        std::cin >> c.customerId;
-        
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Nhap Ho va Ten: ";
-        std::getline(std::cin, c.fullName);
-        
-        std::cout << "Nhap So dien thoai: ";
-        std::getline(std::cin, c.phoneNumber);
-        
-        std::cout << "Nhap Email: ";
-        std::getline(std::cin, c.email);
-        
-        return c;
-    }
-
-    // Nhập thông tin Booking (Yêu cầu truyền vào đối tượng Customer và Tour đã có sẵn)
-    static Booking inputBooking(const Customer& customer, const Tour& tour) {
-        Booking b;
-        // Gán tham chiếu đối tượng (hoặc copy tùy theo thiết kế struct/class của bạn)
-        b.customer = customer;
-        b.tour = tour;
-        
-        std::cout << "\n--- NHAP THONG TIN BOOKING ---\n";
-        std::cout << "Nhap ID Booking: ";
-        std::cin >> b.bookingId;
-        
-        std::cout << "Nhap So luong khach: ";
-        std::cin >> b.numberOfPeople;
-        
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Nhap Ngay dat (DD/MM/YYYY): ";
-        std::getline(std::cin, b.bookingDate);
-        
-        b.status = "Pending"; // Mặc định trạng thái khi mới tạo
-        
-        return b;
+        printLine(85, '=');
     }
 };
-
 #endif // CONSOLE_UI_H

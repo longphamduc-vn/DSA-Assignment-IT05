@@ -185,6 +185,120 @@ public:
         }
         return results;
     }
+
+/**
+     * @brief Tìm tour có giá cao nhất. Trả về Node chứa tour đó.
+     */
+    Node<Tour>* getHighestPriceTour() const {
+        Node<Tour>* current = dataList.getHead();
+        if (current == nullptr) return nullptr; // Trả về nullptr thay vì throw để UI dễ xử lý
+
+        Node<Tour>* extreme = current;
+
+        while (current != nullptr) {
+            if (current->data.price > extreme->data.price) {
+                extreme = current;
+            }
+            current = current->next;
+        }
+        return extreme;
+    }
+
+    /**
+     * @brief Tìm tour có giá thấp nhất.
+     */
+    Node<Tour>* getLowestPriceTour() const {
+        Node<Tour>* current = dataList.getHead();
+        if (current == nullptr) return nullptr;
+
+        Node<Tour>* extreme = current;
+
+        while (current != nullptr) {
+            if (current->data.price < extreme->data.price) {
+                extreme = current;
+            }
+            current = current->next;
+        }
+        return extreme;
+    }
+
+    /**
+     * @brief Tìm tour có thời gian dài nhất.
+     */
+    Node<Tour>* getLongestDurationTour() const {
+        Node<Tour>* current = dataList.getHead();
+        if (current == nullptr) return nullptr;
+
+        Node<Tour>* extreme = current;
+
+        while (current != nullptr) {
+            if (current->data.durationDays > extreme->data.durationDays) {
+                extreme = current;
+            }
+            current = current->next;
+        }
+        return extreme;
+    }
+
+    /**
+     * @brief Tìm tour có thời gian ngắn nhất.
+     */
+    Node<Tour>* getShortestDurationTour() const {
+        Node<Tour>* current = dataList.getHead();
+        if (current == nullptr) return nullptr;
+
+        Node<Tour>* extreme = current;
+
+        while (current != nullptr) {
+            if (current->data.durationDays < extreme->data.durationDays) {
+                extreme = current;
+            }
+            current = current->next;
+        }
+        return extreme;
+    }
+
+    /**
+     * @brief Tìm tour phổ biến nhất (nhiều khách đăng ký nhất).
+     */
+    Node<Tour>* getMostPopularTour() const {
+        Node<Tour>* current = dataList.getHead();
+        if (current == nullptr) return nullptr;
+
+        Node<Tour>* extreme = current;
+
+        while (current != nullptr) {
+            int currentBooked = current->data.maxCapacity - current->data.availableSeats;
+            int extremeBooked = extreme->data.maxCapacity - extreme->data.availableSeats;
+            
+            if (currentBooked > extremeBooked) {
+                extreme = current;
+            }
+            current = current->next;
+        }
+        return extreme;
+    }
+
+    /**
+     * @brief Tìm tour ít phổ biến nhất.
+     */
+    Node<Tour>* getLeastPopularTour() const {
+        Node<Tour>* current = dataList.getHead();
+        if (current == nullptr) return nullptr;
+
+        Node<Tour>* extreme = current;
+
+        while (current != nullptr) {
+            int currentBooked = current->data.maxCapacity - current->data.availableSeats;
+            int extremeBooked = extreme->data.maxCapacity - extreme->data.availableSeats;
+
+            if (currentBooked < extremeBooked) {
+                extreme = current;
+            }
+            current = current->next;
+        }
+        return extreme;
+    }
 };
 
 #endif

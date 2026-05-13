@@ -90,19 +90,6 @@ public:
         return head;
     }
 
-    /**
-     * @brief Prints all elements in the list to the standard output.
-     */
-    void display() const
-    {
-        Node<T> *current = head;
-        while (current != nullptr)
-        {
-            std::cout << current->data << " -> ";
-            current = current->next;
-        }
-        std::cout << "nullptr" << std::endl;
-    }
 
     /**
      * @brief Checks if a value exists in the list.
@@ -231,6 +218,58 @@ public:
             delete temp;
             temp = nextNode;
         }
+    }
+
+    /**
+     * @brief Tìm giá trị nhỏ nhất trong danh sách.
+     * @return T Giá trị nhỏ nhất.
+     * @throw std::runtime_error Nếu danh sách trống.
+     */
+    T getMin() const
+    {
+        if (head == nullptr)
+        {
+            throw std::runtime_error("List is empty");
+        }
+
+        Node<T> *current = head;
+        T minVal = head->data;
+
+        while (current != nullptr)
+        {
+            if (current->data < minVal)
+            {
+                minVal = current->data;
+            }
+            current = current->next;
+        }
+        return minVal;
+    }
+
+    /**
+     * @brief Tìm giá trị lớn nhất trong danh sách.
+     * @return T Giá trị lớn nhất.
+     * @throw std::runtime_error Nếu danh sách trống.
+     */
+    T getMax() const
+    {
+        if (head == nullptr)
+        {
+            throw std::runtime_error("List is empty");
+        }
+
+        Node<T> *current = head;
+        T maxVal = head->data;
+
+        while (current != nullptr)
+        {
+            if (current->data > maxVal)
+            {
+                maxVal = current->data;
+            }
+            current = current->next;
+        }
+        return maxVal;
     }
 };
 

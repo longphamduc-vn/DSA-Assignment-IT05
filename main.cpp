@@ -10,7 +10,7 @@
 #include "services/BookingService.h"
 
 #include "utils/FileIO.h"
-#include "menu/Menu.h"
+#include "ui/MenuHandler.h"
 
 int main() {
     // 1. Khởi tạo các Service cốt lõi
@@ -29,7 +29,7 @@ int main() {
 
     // 3. Khởi tạo và Chạy Vòng lặp Menu chính
     // Inject các dependency (Services) vào Menu thông qua tham chiếu
-    Menu appMenu(tourService, customerService, employeeService, bookingService);
+    MenuHandler appMenu(tourService, customerService, employeeService, bookingService);
     appMenu.run();
 
     // 4. Lưu lại dữ liệu (Serialization) khi người dùng chọn Thoát (0)

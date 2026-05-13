@@ -22,7 +22,7 @@ public:
      * @brief Add a new booking
      * @param booking The booking object to add
      */
-    void addBooking(const Booking& booking)
+    void addBooking(const Booking &booking)
     {
         addItem(booking);
     }
@@ -32,9 +32,9 @@ public:
      * @param bookingId The ID to search for
      * @return Pointer to the found booking node, nullptr if not found
      */
-    Node<Booking>* findBookingById(const std::string& bookingId)
+    Node<Booking> *findBookingById(const std::string &bookingId)
     {
-        Node<Booking>* current = dataList.getHead();
+        Node<Booking> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.bookingId == bookingId)
@@ -51,10 +51,10 @@ public:
      * @param customerId The customer ID to search for
      * @return LinkedList containing bookings for the specified customer
      */
-    LinkedList<Booking> findBookingsByCustomerId(const std::string& customerId)
+    LinkedList<Booking> findBookingsByCustomerId(const std::string &customerId)
     {
         LinkedList<Booking> results;
-        Node<Booking>* current = dataList.getHead();
+        Node<Booking> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.customer.customerId == customerId)
@@ -71,10 +71,10 @@ public:
      * @param tourId The tour ID to search for
      * @return LinkedList containing bookings for the specified tour
      */
-    LinkedList<Booking> findBookingsByTourId(const std::string& tourId)
+    LinkedList<Booking> findBookingsByTourId(const std::string &tourId)
     {
         LinkedList<Booking> results;
-        Node<Booking>* current = dataList.getHead();
+        Node<Booking> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.tour.tourId == tourId)
@@ -91,10 +91,10 @@ public:
      * @param employeeId The employee ID to search for
      * @return LinkedList containing bookings handled by the specified employee
      */
-    LinkedList<Booking> findBookingsByEmployeeId(const std::string& employeeId)
+    LinkedList<Booking> findBookingsByEmployeeId(const std::string &employeeId)
     {
         LinkedList<Booking> results;
-        Node<Booking>* current = dataList.getHead();
+        Node<Booking> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.employee.employeeId == employeeId)
@@ -111,10 +111,10 @@ public:
      * @param bookingDate The booking date to search for
      * @return LinkedList containing bookings on the specified date
      */
-    LinkedList<Booking> findBookingsByDate(const std::string& bookingDate)
+    LinkedList<Booking> findBookingsByDate(const std::string &bookingDate)
     {
         LinkedList<Booking> results;
-        Node<Booking>* current = dataList.getHead();
+        Node<Booking> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.bookingDate == bookingDate)
@@ -132,9 +132,9 @@ public:
      * @param updatedBooking The updated booking data
      * @return true if update was successful, false otherwise
      */
-    bool updateBooking(const std::string& bookingId, const Booking& updatedBooking)
+    bool updateBooking(const std::string &bookingId, const Booking &updatedBooking)
     {
-        Node<Booking>* booking = findBookingById(bookingId);
+        Node<Booking> *booking = findBookingById(bookingId);
         if (booking != nullptr)
         {
             booking->data = updatedBooking;
@@ -147,7 +147,7 @@ public:
      * @brief Get all bookings
      * @return Pointer to the head of booking list
      */
-    Node<Booking>* getAllBookings()
+    Node<Booking> *getAllBookings()
     {
         return getAllItems();
     }
@@ -157,7 +157,7 @@ public:
      * @param bookingId The ID to check
      * @return true if booking exists, false otherwise
      */
-    bool bookingExists(const std::string& bookingId)
+    bool bookingExists(const std::string &bookingId)
     {
         return findBookingById(bookingId) != nullptr;
     }
@@ -176,10 +176,11 @@ public:
      * @param bookingId The ID of the booking to delete
      * @return true if the booking was removed, false otherwise
      */
-    bool deleteBooking(const std::string& bookingId)
+    bool deleteBooking(const std::string &bookingId)
     {
-        Node<Booking>* booking = findBookingById(bookingId);
-        if (booking == nullptr) return false;
+        Node<Booking> *booking = findBookingById(bookingId);
+        if (booking == nullptr)
+            return false;
         return dataList.remove(booking->data);
     }
 
@@ -188,10 +189,10 @@ public:
      * @param keyword Keyword to search for
      * @return LinkedList containing matching bookings
      */
-    LinkedList<Booking> searchBookings(const std::string& keyword)
+    LinkedList<Booking> searchBookings(const std::string &keyword)
     {
         LinkedList<Booking> results;
-        Node<Booking>* current = dataList.getHead();
+        Node<Booking> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.bookingId.find(keyword) != std::string::npos ||
@@ -213,7 +214,7 @@ public:
     double calculateTotalRevenue()
     {
         double totalRevenue = 0;
-        Node<Booking>* current = dataList.getHead();
+        Node<Booking> *current = dataList.getHead();
         while (current != nullptr)
         {
             totalRevenue += current->data.tour.price * current->data.numberOfPeople;
@@ -229,13 +230,118 @@ public:
     int getTotalPeopleBooked()
     {
         int totalPeople = 0;
-        Node<Booking>* current = dataList.getHead();
+        Node<Booking> *current = dataList.getHead();
         while (current != nullptr)
         {
             totalPeople += current->data.numberOfPeople;
             current = current->next;
         }
         return totalPeople;
+    }
+
+    /**
+     * @brief Calculate total revenue from all confirmed bookings.
+     * @return double Total revenue amount.
+     */
+    double getTotalRevenue() const
+    {
+        double total = 0;
+        Node<Booking> *current = dataList.getHead();
+        while (current != nullptr)
+        {
+            // Only count confirmed bookings towards revenue
+            if (current->data.status == "confirmed")
+            {
+                total += (current->data.tour.price * current->data.numberOfPeople);
+            }
+            current = current->next;
+        }
+        return total;
+    }
+
+    /**
+     * @brief Calculate the average spending per booking.
+     * @return double Average amount spent per booking.
+     */
+    double getAverageSpending() const
+    {
+        size_t count = 0;
+        double totalRevenue = 0;
+        Node<Booking> *current = dataList.getHead();
+
+        while (current != nullptr)
+        {
+            if (current->data.status == "confirmed")
+            {
+                totalRevenue += (current->data.tour.price * current->data.numberOfPeople);
+                count++;
+            }
+            current = current->next;
+        }
+
+        return (count == 0) ? 0.0 : totalRevenue / count;
+    }
+
+    /**
+     * @brief Count the total number of bookings made (excluding cancelled).
+     * @return int Number of active or completed bookings.
+     */
+    int countBookedTours() const
+    {
+        int count = 0;
+        Node<Booking> *current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.status != "cancelled")
+            {
+                count++;
+            }
+            current = current->next;
+        }
+        return count;
+    }
+
+    /**
+     * @brief Count how many unique customers have placed at least one booking.
+     * @return int Number of unique participating customers.
+     */
+    int countUniqueCustomers() const
+    {
+        LinkedList<std::string> customerIds; // Temporary list to track unique IDs
+        Node<Booking> *current = dataList.getHead();
+
+        while (current != nullptr)
+        {
+            if (current->data.status != "cancelled")
+            {
+                // Check if ID is already in our unique list
+                if (!customerIds.exists(current->data.customer.customerId))
+                {
+                    customerIds.insert(current->data.customer.customerId, INSERT_TAIL);
+                }
+            }
+            current = current->next;
+        }
+        return customerIds.getSize();
+    }
+    /**
+     * @brief Count the number of bookings managed by a specific employee.
+     * @param employeeId The ID of the employee to check.
+     * @return int Total number of bookings assigned.
+     */
+    int getEmployeeWorkload(const std::string &employeeId) const
+    {
+        int count = 0;
+        Node<Booking> *current = dataList.getHead();
+        while (current != nullptr)
+        {
+            if (current->data.employee.employeeId == employeeId)
+            {
+                count++;
+            }
+            current = current->next;
+        }
+        return count;
     }
 };
 
