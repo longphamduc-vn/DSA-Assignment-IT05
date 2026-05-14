@@ -1,0 +1,57 @@
+@startuml
+
+
+skinparam DefaultFontSize 14
+skinparam Shadowing false
+skinparam ActivityBackgroundColor #FFFFFF
+skinparam ActivityBorderColor #2C3E50
+skinparam ActivityFontColor #2C3E50
+skinparam NoteBackgroundColor #FFF9C4
+
+le
+title CONTROL FLOW DIAGRAM - TOURISM BUSINESS MANAGEMENT SYSTEM
+
+start
+
+:Initialize System Services;
+note left: Linking Tour, Customer, \nEmployee, and Booking logic
+
+repeat
+  :Display Main Menu Interface;
+  :User selects an operation (0-7);
+  
+  if (Choice = 1) then (Master Data Management)
+    partition "I/O & File Operations" {
+        :Batch Data Input / Table Output;
+        :Manual Persistence (Load/Save to .txt);
+    }
+  elseif (Choice = 2) then (Information Update)
+    partition "Record Maintenance" {
+        :Add New Records;
+        :Edit Existing Information;
+        :Delete Records from Database;
+    }
+  elseif (Choice = 3) then (Data Query)
+    :Search by Keywords\n(IDs, Names, or Contact Info);
+  elseif (Choice = 4) then (Data Organization)
+    :Sort System Lists\n(By Price, Date, or Alphabetical);
+  elseif (Choice = 5) then (Boundary Analysis)
+    :Identify Extremes\n(Highest/Lowest Price, Longest Duration);
+  elseif (Choice = 6) then (General Measurement)
+    :Calculate Key Metrics\n(Total Revenue, Average Pricing, Headcount);
+  elseif (Choice = 7) then (Categorical Reporting)
+    :Generate Statistical Reports\n(By Destination, Status, or Performance);
+  elseif (Choice = 0) then (Exit Program)
+    -[#blue,dashed]->
+    :Trigger **AUTOMATIC DATA PERSISTENCE**;
+    :Save all LinkedLists to System Files;
+    :Display Farewell Message;
+    stop
+  else (Invalid)
+    :Alert: Invalid Choice;
+  endif
+  
+  :Pause for User Confirmation;
+repeat while (Return to Main Menu?)
+
+@enduml

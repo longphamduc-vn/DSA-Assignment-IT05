@@ -2,16 +2,22 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
-#include <climits> // Cần thêm thư viện này cho INT_MAX nếu chưa có
+#include <climits>
+#include <iomanip>
+#include <map>
+
 
 #include "../services/TourService.h"
 #include "../services/CustomerService.h"
 #include "../services/EmployeeService.h"
 #include "../services/BookingService.h"
-#include "../utils/ConsoleUI.h"
+#include "ConsoleUI.h"
 #include "../utils/Validation.h"
 #include "../utils/FileIO.h"
 #include "InputHandler.h"
+#include <climits>
+#include <map>
+#include <iomanip>
 
 using namespace std;
 
@@ -191,7 +197,7 @@ private:
             default:
                 ConsoleUI::successMessage("[!] Invalid choice! Please select between 0 and 16.");
             }
-                ConsoleUI::pauseScreen();
+            ConsoleUI::pauseScreen();
         }
     }
 
@@ -222,7 +228,6 @@ private:
             case 1:
                 tourService.addTour(InputHandler::inputTour());
                 ConsoleUI::successMessage("Tour added successfully!");
-                ConsoleUI::pauseScreen();
                 break;
             case 2:
             {
@@ -232,14 +237,12 @@ private:
                 if (!tourService.findTourById(id))
                 {
                     ConsoleUI::errorMessage("Tour not found!");
-                    ConsoleUI::pauseScreen();
                     break;
                 }
                 Tour t = InputHandler::inputTour();
                 t.tourId = id; // Giữ nguyên ID cũ
                 tourService.updateTour(id, t);
                 ConsoleUI::successMessage("Tour updated successfully!");
-                ConsoleUI::pauseScreen();
             }
             break;
             case 3:
@@ -251,7 +254,6 @@ private:
                     ConsoleUI::successMessage("Tour deleted successfully!");
                 else
                     ConsoleUI::errorMessage("Tour not found!");
-                ConsoleUI::pauseScreen();
             }
             break;
 
@@ -259,7 +261,6 @@ private:
             case 4:
                 customerService.addCustomer(InputHandler::inputCustomer());
                 ConsoleUI::successMessage("Customer added successfully!");
-                ConsoleUI::pauseScreen();
                 break;
             case 5:
             {
@@ -269,14 +270,12 @@ private:
                 if (!customerService.findCustomerById(id))
                 {
                     ConsoleUI::errorMessage("Customer not found!");
-                    ConsoleUI::pauseScreen();
                     break;
                 }
                 Customer c = InputHandler::inputCustomer();
                 c.customerId = id;
                 customerService.updateCustomer(id, c);
                 ConsoleUI::successMessage("Customer updated successfully!");
-                ConsoleUI::pauseScreen();
             }
             break;
             case 6:
@@ -288,7 +287,6 @@ private:
                     ConsoleUI::successMessage("Customer deleted successfully!");
                 else
                     ConsoleUI::errorMessage("Customer not found!");
-                ConsoleUI::pauseScreen();
             }
             break;
 
@@ -296,7 +294,6 @@ private:
             case 7:
                 employeeService.addEmployee(InputHandler::inputEmployee());
                 ConsoleUI::successMessage("Employee added successfully!");
-                ConsoleUI::pauseScreen();
                 break;
             case 8:
             {
@@ -306,14 +303,12 @@ private:
                 if (!employeeService.findEmployeeById(id))
                 {
                     ConsoleUI::errorMessage("Employee not found!");
-                    ConsoleUI::pauseScreen();
                     break;
                 }
                 Employee e = InputHandler::inputEmployee();
                 e.employeeId = id;
                 employeeService.updateEmployee(id, e);
                 ConsoleUI::successMessage("Employee updated successfully!");
-                ConsoleUI::pauseScreen();
             }
             break;
             case 9:
@@ -325,7 +320,6 @@ private:
                     ConsoleUI::successMessage("Employee deleted successfully!");
                 else
                     ConsoleUI::errorMessage("Employee not found!");
-                ConsoleUI::pauseScreen();
             }
             break;
 
@@ -339,7 +333,6 @@ private:
                 if (!cNode)
                 {
                     ConsoleUI::errorMessage("Customer not found!");
-                    ConsoleUI::pauseScreen();
                     break;
                 }
 
@@ -349,13 +342,11 @@ private:
                 if (!tNode)
                 {
                     ConsoleUI::errorMessage("Tour not found!");
-                    ConsoleUI::pauseScreen();
                     break;
                 }
 
                 bookingService.addBooking(InputHandler::inputBooking(cNode->data, tNode->data));
                 ConsoleUI::successMessage("Booking added successfully!");
-                ConsoleUI::pauseScreen();
             }
             break;
             case 11:
@@ -367,14 +358,13 @@ private:
                     ConsoleUI::successMessage("Booking deleted successfully!");
                 else
                     ConsoleUI::errorMessage("Booking not found!");
-                ConsoleUI::pauseScreen();
             }
             break;
 
             default:
                 ConsoleUI::errorMessage("Invalid choice! Please select between 0 and 11.");
-                ConsoleUI::pauseScreen();
             }
+            ConsoleUI::pauseScreen();
         }
     }
 
@@ -454,18 +444,16 @@ private:
 
     // ================= 5. BOUNDARY ANALYSIS (MAX/MIN) =================
 
-#include <climits> // Bắt buộc để dùng INT_MAX
-
     void menuBoundaryAnalysis()
     {
         while (true)
         {
             int choice;
             cout << "\n=======================================================";
-            cout << "\n             BOUNDARY ANALYSIS (MAX/MIN)";
+            cout << "\n            BOUNDARY ANALYSIS (MAX/MIN)";
             cout << "\n=======================================================";
             cout << "\n [ TOUR ANALYSIS ]";
-            cout << "\n 1. Price Analysis       (Highest / Lowest)";
+            cout << "\n 1. Price Analysis      (Highest / Lowest)";
             cout << "\n 2. Duration Analysis    (Longest / Shortest)";
             cout << "\n 3. Popularity Analysis  (Most / Least Popular)";
             cout << "\n\n [ BOOKING ANALYSIS ]";
@@ -479,121 +467,93 @@ private:
                 break;
 
             cout << "\n--- ANALYSIS RESULTS ---\n";
+
             switch (choice)
             {
             case 1:
             {
-                // Sửa thành con trỏ Node<Tour>*
-                Node<Tour> *maxTour = tourService.getHighestPriceTour();
-                Node<Tour> *minTour = tourService.getLowestPriceTour();
-
-                cout << ">> Highest Price Tour: " << (maxTour ? maxTour->data.tourId : "N/A") << "\n";
-                cout << ">> Lowest Price Tour:  " << (minTour ? minTour->data.tourId : "N/A") << "\n";
+                auto max = tourService.getHighestPriceTour();
+                auto min = tourService.getLowestPriceTour();
+                cout << ">> Highest Price Tour: " << (max ? max->data.tourId : "N/A") << "\n";
+                cout << ">> Lowest Price Tour:  " << (min ? min->data.tourId : "N/A") << "\n";
                 break;
             }
             case 2:
             {
-                Node<Tour> *maxTour = tourService.getLongestDurationTour();
-                Node<Tour> *minTour = tourService.getShortestDurationTour();
-
-                cout << ">> Longest Duration Tour:  " << (maxTour ? maxTour->data.tourId : "N/A") << "\n";
-                cout << ">> Shortest Duration Tour: " << (minTour ? minTour->data.tourId : "N/A") << "\n";
+                auto max = tourService.getLongestDurationTour();
+                auto min = tourService.getShortestDurationTour();
+                cout << ">> Longest Duration Tour:  " << (max ? max->data.tourId : "N/A") << "\n";
+                cout << ">> Shortest Duration Tour: " << (min ? min->data.tourId : "N/A") << "\n";
                 break;
             }
             case 3:
             {
-                Node<Tour> *maxTour = tourService.getMostPopularTour();
-                Node<Tour> *minTour = tourService.getLeastPopularTour();
-
-                cout << ">> Most Popular Tour:  " << (maxTour ? maxTour->data.tourId : "N/A") << "\n";
-                cout << ">> Least Popular Tour: " << (minTour ? minTour->data.tourId : "N/A") << "\n";
+                auto max = tourService.getMostPopularTour();
+                auto min = tourService.getLeastPopularTour();
+                cout << ">> Most Popular Tour:  " << (max ? max->data.tourId : "N/A") << "\n";
+                cout << ">> Least Popular Tour: " << (min ? min->data.tourId : "N/A") << "\n";
                 break;
             }
             case 4:
             {
-                Node<Booking> *maxBooking = nullptr;
-                Node<Booking> *minBooking = nullptr;
-                int maxPeople = -1;
-                int minPeople = INT_MAX;
+                // Giả sử bạn đã thêm 2 hàm này vào bookingService
+                auto max = bookingService.getBookingWithMostPeople();
+                auto min = bookingService.getBookingWithFewestPeople();
 
-                Node<Booking> *current = bookingService.getRepository().getHead();
-
-                if (!current)
+                if (!max || !min)
                 {
                     cout << ">> No booking data available.\n";
                 }
                 else
                 {
-                    while (current)
-                    {
-                        if (current->data.numberOfPeople > maxPeople)
-                        {
-                            maxPeople = current->data.numberOfPeople;
-                            maxBooking = current;
-                        }
-                        if (current->data.numberOfPeople < minPeople)
-                        {
-                            minPeople = current->data.numberOfPeople;
-                            minBooking = current;
-                        }
-                        current = current->next;
-                    }
-
-                    cout << ">> Booking with Most People:   " << (maxBooking ? maxBooking->data.bookingId : "N/A");
-                    if (maxBooking)
-                        cout << " (" << maxPeople << " pax)";
-                    cout << "\n";
-
-                    cout << ">> Booking with Fewest People: " << (minBooking ? minBooking->data.bookingId : "N/A");
-                    if (minBooking)
-                        cout << " (" << minPeople << " pax)";
-                    cout << "\n";
+                    cout << ">> Booking with Most People:   " << max->data.bookingId << " (" << max->data.numberOfPeople << " pax)\n";
+                    cout << ">> Booking with Fewest People: " << min->data.bookingId << " (" << min->data.numberOfPeople << " pax)\n";
                 }
                 break;
             }
             default:
                 ConsoleUI::errorMessage("Invalid choice! Please select between 0 and 4.");
+                continue; // Bỏ qua phần pause nếu nhập sai
             }
 
-            if (choice >= 1 && choice <= 4)
-            {
-                ConsoleUI::pauseScreen();
-            }
+            ConsoleUI::pauseScreen();
         }
     }
 
     // ================= 6. GENERAL MEASUREMENT (SUM/AVG/COUNT) =================
     void menuGeneralMeasurement()
-{
-    while (true)
     {
-        int choice;
-        cout << "\n=======================================================";
-        cout << "\n       GENERAL MEASUREMENT (SUM / AVG / COUNT)";
-        cout << "\n=======================================================";
-        cout << "\n [ STATISTICS CATEGORIES ]";
-        cout << "\n 1. Tour Overview      (Total Tours, Avg Price)";
-        cout << "\n 2. Customer Insights  (Total, Participation)";
-        cout << "\n 3. Employee Workload  (Total Staff, Performance)";
-        cout << "\n 4. Financial Report   (Revenue, People, Spending)";
-        cout << "\n\n [ 0. Go Back ]";
-        cout << "\n-------------------------------------------------------";
-
-        ConsoleUI::inputSafeInt(choice, "\nSelect an action (0-4): ");
-
-        if (choice == 0) break;
-
-        cout << "\n>>> ANALYSIS RESULTS <<<\n";
-        cout << "-------------------------------------------------------";
-
-        switch (choice)
+        while (true)
         {
+            int choice;
+            cout << "\n=======================================================";
+            cout << "\n       GENERAL MEASUREMENT (SUM / AVG / COUNT)";
+            cout << "\n=======================================================";
+            cout << "\n [ STATISTICS CATEGORIES ]";
+            cout << "\n 1. Tour Overview      (Total Tours, Avg Price)";
+            cout << "\n 2. Customer Insights  (Total, Participation)";
+            cout << "\n 3. Employee Workload  (Total Staff, Performance)";
+            cout << "\n 4. Financial Report   (Revenue, People, Spending)";
+            cout << "\n\n [ 0. Go Back ]";
+            cout << "\n-------------------------------------------------------";
+
+            ConsoleUI::inputSafeInt(choice, "\nSelect an action (0-4): ");
+
+            if (choice == 0)
+                break;
+
+            cout << "\n>>> ANALYSIS RESULTS <<<\n";
+            cout << "-------------------------------------------------------";
+
+            switch (choice)
+            {
             case 1: // Tour Statistics
             {
                 int count = tourService.getTotalTours();
                 double totalPrice = 0;
-                Node<Tour>* current = tourService.getRepository().getHead();
-                while (current) {
+                Node<Tour> *current = tourService.getRepository().getHead();
+                while (current)
+                {
                     totalPrice += current->data.price;
                     current = current->next;
                 }
@@ -629,75 +589,118 @@ private:
             default:
                 ConsoleUI::errorMessage("Invalid selection! Please try again.");
                 continue;
+            }
+
+            cout << "\n-------------------------------------------------------";
+            ConsoleUI::pauseScreen();
         }
-        
-        cout << "\n-------------------------------------------------------";
-        ConsoleUI::pauseScreen();
     }
-}
     // ================= 7. CATEGORICAL REPORTING (STATISTICS) =================
+
+
     void menuCategoricalReporting()
     {
         while (true)
         {
             int choice;
-            cout << "\n=== CATEGORICAL REPORTING (STATISTICS) ===\n";
-            cout << "1. Statistics for Tours (By Status)\n";
-            cout << "----\n";
-            cout << "2. Statistics for Employees (By Position)\n";
-            cout << "----\n";
-            cout << "3. Statistics for Bookings (By Status)\n";
-            cout << "0. Go Back\n";
-            cout << "Select an action (0-3): ";
-            cin >> choice;
+            cout << "\n=======================================================";
+            cout << "\n         CATEGORICAL REPORTING (STATISTICS)";
+            cout << "\n=======================================================";
+            cout << "\n [ TOUR ]";
+            cout << "\n 1. Tours by Destination      3. Tours by Status";
+            cout << "\n 2. Tours by Price Range";
+            cout << "\n [ BOOKING ]";
+            cout << "\n 4. Revenue by Tour           6. Bookings by Status";
+            cout << "\n 5. Avg Value by Status";
+            cout << "\n [ EMPLOYEE ]";
+            cout << "\n 7. Employees by Position     8. Performance (Task Count)";
+            cout << "\n\n 0. Go Back";
+            cout << "\n-------------------------------------------------------";
 
+            ConsoleUI::inputSafeInt(choice, "\nSelect an action (0-8): ");
             if (choice == 0)
                 break;
 
-            if (choice == 1)
+            cout << "\n--- REPORT RESULTS ---\n";
+            cout << fixed << setprecision(2);
+
+            switch (choice)
             {
-                int act = 0, inact = 0, comp = 0;
-                Node<Tour> *current = tourService.getRepository().getHead();
-                while (current)
-                {
-                    if (current->data.status == "active")
-                        act++;
-                    else if (current->data.status == "inactive")
-                        inact++;
-                    else if (current->data.status == "completed")
-                        comp++;
-                    current = current->next;
-                }
-                cout << "Tour Status -> Active: " << act << " | Inactive: " << inact << " | Completed: " << comp << "\n";
-            }
-            else if (choice == 2)
+            case 1:
             {
-                cout << "Employee Positions:\n";
-                Node<Employee> *current = employeeService.getRepository().getHead();
-                while (current)
-                {
-                    cout << "  " << current->data.fullName << " - " << current->data.position << "\n";
-                    current = current->next;
-                }
+                auto results = tourService.countToursByDestination();
+                if (results.empty())
+                    cout << "No data available.\n";
+                for (auto const &[dest, count] : results)
+                    cout << ">> " << left << setw(20) << dest << ": " << count << " tours\n";
+                break;
             }
-            else if (choice == 3)
+            case 2:
             {
-                int pend = 0, conf = 0, comp = 0, canc = 0;
-                Node<Booking> *current = bookingService.getRepository().getHead();
-                while (current)
-                {
-                    if (current->data.status == "pending")
-                        pend++;
-                    else if (current->data.status == "confirmed")
-                        conf++;
-                    else if (current->data.status == "completed")
-                        comp++;
-                    else if (current->data.status == "cancelled")
-                        canc++;
-                    current = current->next;
-                }
-                cout << "Booking Status -> Pending: " << pend << " | Confirmed: " << conf << " | Completed: " << comp << " | Cancelled: " << canc << "\n";
+                double minP, maxP;
+                ConsoleUI::inputSafeDouble(minP, "Min Price: ");
+                ConsoleUI::inputSafeDouble(maxP, "Max Price: ");
+                int count = tourService.countToursInPriceRange(minP, maxP);
+                cout << ">> Found " << count << " tours in range [$" << minP << " - $" << maxP << "]\n";
+                break;
             }
+            case 3:
+            {
+                auto results = tourService.countToursByStatus();
+                for (auto const &[status, count] : results)
+                    cout << ">> Status [" << status << "]: " << count << " tours\n";
+                break;
+            }
+            case 4:
+            {
+                auto results = bookingService.getRevenueByTour();
+                if (results.empty())
+                    cout << "No revenue data (Confirmed/Paid bookings only).\n";
+                for (auto const &[id, rev] : results)
+                    cout << ">> Tour: " << id << " | Revenue: $" << rev << "\n";
+                break;
+            }
+            case 5:
+            {
+                auto results = bookingService.getAverageValueByStatus();
+                for (auto const &[status, data] : results)
+                {
+                    double avg = data.first / data.second;
+                    cout << ">> " << left << setw(12) << status << " Avg: $" << setw(10) << avg
+                         << " (" << data.second << " bookings)\n";
+                }
+                break;
+            }
+            case 6:
+            {
+                auto results = bookingService.countBookingsByStatus();
+                for (auto const &[status, count] : results)
+                    cout << ">> Status [" << status << "]: " << count << " bookings\n";
+                break;
+            }
+            case 7:
+            {
+                auto results = employeeService.countEmployeesByPosition();
+                for (auto const &[pos, count] : results)
+                    cout << ">> " << left << setw(20) << pos << ": " << count << "\n";
+                break;
+            }
+            case 8:
+            {
+                auto results = bookingService.getEmployeePerformance();
+                for (auto const &[empId, count] : results)
+                    cout << ">> Employee [" << empId << "] handled: " << count << " tasks\n";
+
+                int totalE = employeeService.getItemCount();
+                if (totalE > 0)
+                    cout << "\n>> Avg tasks per employee: " << (double)bookingService.getItemCount() / totalE << "\n";
+                break;
+            }
+            default:
+                ConsoleUI::errorMessage("Invalid choice!");
+                continue;
+            }
+            ConsoleUI::pauseScreen();
         }
     }
 

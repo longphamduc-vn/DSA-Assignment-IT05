@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <map>
 #include "GenericService.h"
 #include "../models/Tour.h"
 #include "../core/LinkedList.h"
@@ -221,6 +222,7 @@ public:
         }
         return extreme;
     }
+    
 
     /**
      * @brief Tìm tour có thời gian dài nhất.
@@ -298,6 +300,46 @@ public:
             current = current->next;
         }
         return extreme;
+    }
+    /**
+     * @brief Thống kê số lượng Tour theo địa điểm
+     */
+    std::map<std::string, int> countToursByDestination() const {
+        std::map<std::string, int> destCount;
+        Node<Tour>* current = dataList.getHead();
+        while (current != nullptr) {
+            destCount[current->data.destination]++;
+            current = current->next;
+        }
+        return destCount;
+    }
+
+    /**
+     * @brief Đếm số lượng Tour trong khoảng giá
+     */
+    int countToursInPriceRange(double minPrice, double maxPrice) const {
+        int count = 0;
+        Node<Tour>* current = dataList.getHead();
+        while (current != nullptr) {
+            if (current->data.price >= minPrice && current->data.price <= maxPrice) {
+                count++;
+            }
+            current = current->next;
+        }
+        return count;
+    }
+
+    /**
+     * @brief Thống kê số lượng Tour theo trạng thái
+     */
+    std::map<std::string, int> countToursByStatus() const {
+        std::map<std::string, int> statusCount;
+        Node<Tour>* current = dataList.getHead();
+        while (current != nullptr) {
+            statusCount[current->data.status]++;
+            current = current->next;
+        }
+        return statusCount;
     }
 };
 

@@ -3,6 +3,7 @@
 
 #include <string>
 #include <iostream>
+#include <map>
 #include "GenericService.h"
 #include "../models/Employee.h"
 #include "../core/LinkedList.h"
@@ -164,6 +165,19 @@ public:
             current = current->next;
         }
         return results;
+    }
+
+    /**
+     * @brief Thống kê số lượng nhân viên theo chức vụ
+     */
+    std::map<std::string, int> countEmployeesByPosition() const {
+        std::map<std::string, int> posCount;
+        Node<Employee>* current = dataList.getHead();
+        while (current != nullptr) {
+            posCount[current->data.position]++;
+            current = current->next;
+        }
+        return posCount;
     }
 };
 

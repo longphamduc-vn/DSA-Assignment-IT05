@@ -6,7 +6,10 @@
 #include "GenericService.h"
 #include "../models/Booking.h"
 #include "../core/LinkedList.h"
-
+#include <string>
+#include <map>
+#include <vector>
+#include <iomanip>
 /**
  * @brief Service class for managing Booking operations
  */
@@ -342,6 +345,114 @@ public:
             current = current->next;
         }
         return count;
+    }
+
+    /**
+     * @brief Tìm đơn đặt chỗ có số lượng người tham gia lớn nhất.
+     * @return Node<Booking>* Trả về con trỏ tới Node chứa Booking, hoặc nullptr nếu danh sách trống.
+     */
+    Node<Booking> *getBookingWithMostPeople() const
+    {
+        Node<Booking> *current = dataList.getHead();
+        if (current == nullptr)
+            return nullptr;
+
+        Node<Booking> *extreme = current;
+
+        while (current != nullptr)
+        {
+            if (current->data.numberOfPeople > extreme->data.numberOfPeople)
+            {
+                extreme = current;
+            }
+            current = current->next;
+        }
+        return extreme;
+    }
+
+    /**
+     * @brief Tìm đơn đặt chỗ có số lượng người tham gia ít nhất.
+     * @return Node<Booking>* Trả về con trỏ tới Node chứa Booking, hoặc nullptr nếu danh sách trống.
+     */
+    Node<Booking> *getBookingWithFewestPeople() const
+    {
+        Node<Booking> *current = dataList.getHead();
+        if (current == nullptr)
+            return nullptr;
+
+        Node<Booking> *extreme = current;
+
+        while (current != nullptr)
+        {
+            if (current->data.numberOfPeople < extreme->data.numberOfPeople)
+            {
+                extreme = current;
+            }
+            current = current->next;
+        }
+        return extreme;
+    }
+
+    std::map<std::string, double> getRevenueByTour() const {
+        std::map<std::string, double> revenueMap;
+        Node<Booking>* current = dataList.getHead();
+        
+        while (current) {
+            std::string status = current->data.status;
+            // Chuyển status về lowercase nếu cần so sánh chính xác hơn
+            if (status == "confirmed" || status == "Paid" || status == "confirmed") {
+                double tripCost = current->data.numberOfPeople * current->data.tour.price;
+                revenueMap[current->data.tour.tourId] += tripCost;
+            }
+            current = current->next;
+        }
+        return revenueMap;
+    }
+
+    /**
+     * @brief Tính giá trị trung bình đơn hàng theo trạng thái
+     * Trả về map: <Status, <TotalRevenue, Count>>
+     */
+    std::map<std::string, std::pair<double, int>> getAverageValueByStatus() const {
+        std::map<std::string, std::pair<double, int>> stats;
+        Node<Booking>* current = dataList.getHead();
+        
+        while (current) {
+            double total = current->data.numberOfPeople * current->data.tour.price;
+            stats[current->data.status].first += total;
+            stats[current->data.status].second++;
+            current = current->next;
+        }
+        return stats;
+    }
+
+    /**
+     * @brief Thống kê số lượng đơn theo trạng thái (Confirmed, Pending, Cancelled)
+     */
+    std::map<std::string, int> countBookingsByStatus() const {
+        std::map<std::string, int> statusCount;
+        Node<Booking>* current = dataList.getHead();
+        while (current) {
+            statusCount[current->data.status]++;
+            current = current->next;
+        }
+        return statusCount;
+    }
+
+    /**
+     * @brief Hiệu suất nhân viên: Đếm số đơn mỗi nhân viên phụ trách
+     */
+    std::map<std::string, int> getEmployeePerformance() const {
+        std::map<std::string, int> perfMap;
+        Node<Booking>* current = dataList.getHead();
+        while (current) {
+            std::string empId = current->data.employee.employeeId;
+            if (!empId.empty()) {
+                perfMap[empId]++;
+            }
+            current = current->next;
+        }
+        return perfMap;
     }
 };
 

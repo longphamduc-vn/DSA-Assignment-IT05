@@ -1,0 +1,51 @@
+@startwbs
+<style>
+wbsDiagram {
+  LineColor #263238
+  Direction TB   ' Top to Bottom
+  Arrow {
+    LineColor #263238
+  }
+  node {
+    FontSize 14
+    RoundCorner 0
+    Padding 5
+  }
+  rootNode {
+    FontSize 16
+    FontStyle bold
+    BackgroundColor #ECEFF1
+  }
+}
+</style>
+
+* Project Structure
+** core
+*** Node.h
+*** LinkedList.h
+** models
+*** Tour.h
+*** Customer.h
+*** Booking.h
+*** Employee.h
+** services
+*** GenericService.h
+*** CustomerService.h
+*** EmployeeService.h
+*** TourService.h
+*** BookingService.h
+** ui
+*** InputHandler.h
+*** MenuHandler.h
+*** ConsoleUI.h
+** utils
+*** FileIO.h
+*** Validation.h
+** data
+*** tours.txt
+*** customers.txt
+*** bookings.txt
+*** employees.txt
+** main.cpp
+** Makefile
+@endwbs
