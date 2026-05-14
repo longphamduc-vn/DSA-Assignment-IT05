@@ -3,7 +3,6 @@
 
 #include <string>
 #include <iostream>
-#include <map>
 #include "GenericService.h"
 #include "../models/Employee.h"
 #include "../core/LinkedList.h"
@@ -14,6 +13,11 @@
 class EmployeeService : public GenericService<Employee>
 {
 public:
+    struct CountResult {
+        std::string key;
+        int count;
+    };
+
     /**
      * @brief Constructor
      */
@@ -170,11 +174,20 @@ public:
     /**
      * @brief Thống kê số lượng nhân viên theo chức vụ
      */
-    std::map<std::string, int> countEmployeesByPosition() const {
-        std::map<std::string, int> posCount;
+    LinkedList<CountResult> countEmployeesByPosition() const {
+        LinkedList<CountResult> posCount;
         Node<Employee>* current = dataList.getHead();
         while (current != nullptr) {
-            posCount[current->data.position]++;
+            const std::string& pos = current->data.position;
+            Node<CountResult>* entry = posCount.getHead();
+            while (entry != nullptr && entry->data.key != pos) {
+                entry = entry->next;
+            }
+            if (entry != nullptr) {
+                entry->data.count++;
+            } else {
+                posCount.insert(CountResult{pos, 1}, INSERT_TAIL);
+            }
             current = current->next;
         }
         return posCount;

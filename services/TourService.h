@@ -3,7 +3,6 @@
 
 #include <string>
 #include <iostream>
-#include <map>
 #include "GenericService.h"
 #include "../models/Tour.h"
 #include "../core/LinkedList.h"
@@ -14,6 +13,11 @@
 class TourService : public GenericService<Tour>
 {
 public:
+    struct CountResult {
+        std::string key;
+        int count;
+    };
+
     /**
      * @brief Constructor
      */
@@ -304,11 +308,20 @@ public:
     /**
      * @brief Thống kê số lượng Tour theo địa điểm
      */
-    std::map<std::string, int> countToursByDestination() const {
-        std::map<std::string, int> destCount;
+    LinkedList<CountResult> countToursByDestination() const {
+        LinkedList<CountResult> destCount;
         Node<Tour>* current = dataList.getHead();
         while (current != nullptr) {
-            destCount[current->data.destination]++;
+            const std::string& dest = current->data.destination;
+            Node<CountResult>* entry = destCount.getHead();
+            while (entry != nullptr && entry->data.key != dest) {
+                entry = entry->next;
+            }
+            if (entry != nullptr) {
+                entry->data.count++;
+            } else {
+                destCount.insert(CountResult{dest, 1}, INSERT_TAIL);
+            }
             current = current->next;
         }
         return destCount;
@@ -332,11 +345,20 @@ public:
     /**
      * @brief Thống kê số lượng Tour theo trạng thái
      */
-    std::map<std::string, int> countToursByStatus() const {
-        std::map<std::string, int> statusCount;
+    LinkedList<CountResult> countToursByStatus() const {
+        LinkedList<CountResult> statusCount;
         Node<Tour>* current = dataList.getHead();
         while (current != nullptr) {
-            statusCount[current->data.status]++;
+            const std::string& status = current->data.status;
+            Node<CountResult>* entry = statusCount.getHead();
+            while (entry != nullptr && entry->data.key != status) {
+                entry = entry->next;
+            }
+            if (entry != nullptr) {
+                entry->data.count++;
+            } else {
+                statusCount.insert(CountResult{status, 1}, INSERT_TAIL);
+            }
             current = current->next;
         }
         return statusCount;

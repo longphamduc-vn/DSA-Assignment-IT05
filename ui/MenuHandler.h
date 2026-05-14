@@ -1,12 +1,3 @@
-#include <iostream>
-#include <string>
-#include <algorithm>
-#include <cctype>
-#include <climits>
-#include <iomanip>
-#include <map>
-
-
 #include "../services/TourService.h"
 #include "../services/CustomerService.h"
 #include "../services/EmployeeService.h"
@@ -15,9 +6,6 @@
 #include "../utils/Validation.h"
 #include "../utils/FileIO.h"
 #include "InputHandler.h"
-#include <climits>
-#include <map>
-#include <iomanip>
 
 using namespace std;
 
@@ -629,10 +617,10 @@ private:
             case 1:
             {
                 auto results = tourService.countToursByDestination();
-                if (results.empty())
+                if (results.getHead() == nullptr)
                     cout << "No data available.\n";
-                for (auto const &[dest, count] : results)
-                    cout << ">> " << left << setw(20) << dest << ": " << count << " tours\n";
+                for (auto current = results.getHead(); current != nullptr; current = current->next)
+                    cout << ">> " << left << setw(20) << current->data.key << ": " << current->data.count << " tours\n";
                 break;
             }
             case 2:
@@ -647,8 +635,8 @@ private:
             case 3:
             {
                 auto results = tourService.countToursByStatus();
-                for (auto const &[status, count] : results)
-                    cout << ">> Status [" << status << "]: " << count << " tours\n";
+                for (auto current = results.getHead(); current != nullptr; current = current->next)
+                    cout << ">> Status [" << current->data.key << "]: " << current->data.count << " tours\n";
                 break;
             }
             case 4:
@@ -681,8 +669,8 @@ private:
             case 7:
             {
                 auto results = employeeService.countEmployeesByPosition();
-                for (auto const &[pos, count] : results)
-                    cout << ">> " << left << setw(20) << pos << ": " << count << "\n";
+                for (auto current = results.getHead(); current != nullptr; current = current->next)
+                    cout << ">> " << left << setw(20) << current->data.key << ": " << current->data.count << "\n";
                 break;
             }
             case 8:
