@@ -13,7 +13,8 @@
 class EmployeeService : public GenericService<Employee>
 {
 public:
-    struct CountResult {
+    struct CountResult
+    {
         std::string key;
         int count;
     };
@@ -27,8 +28,15 @@ public:
      * @brief Add a new employee
      * @param employee The employee object to add
      */
-    void addEmployee(const Employee& employee)
+    bool addEmployee(const Employee &employee)
     {
+            if (employeeExists(employee.employeeId))
+            {
+                return false;
+            }
+
+            addItem(employee);
+            return true;
         addItem(employee);
     }
 
@@ -37,9 +45,9 @@ public:
      * @param employeeId The ID to search for
      * @return Pointer to the found employee node, nullptr if not found
      */
-    Node<Employee>* findEmployeeById(const std::string& employeeId)
+    Node<Employee> *findEmployeeById(const std::string &employeeId)
     {
-        Node<Employee>* current = dataList.getHead();
+        Node<Employee> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.employeeId == employeeId)
@@ -56,10 +64,10 @@ public:
      * @param name The name to search for
      * @return LinkedList containing matching employees
      */
-    LinkedList<Employee> findEmployeeByName(const std::string& name)
+    LinkedList<Employee> findEmployeeByName(const std::string &name)
     {
         LinkedList<Employee> results;
-        Node<Employee>* current = dataList.getHead();
+        Node<Employee> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.fullName.find(name) != std::string::npos)
@@ -76,10 +84,10 @@ public:
      * @param position The position to search for
      * @return LinkedList containing employees with the specified position
      */
-    LinkedList<Employee> findEmployeeByPosition(const std::string& position)
+    LinkedList<Employee> findEmployeeByPosition(const std::string &position)
     {
         LinkedList<Employee> results;
-        Node<Employee>* current = dataList.getHead();
+        Node<Employee> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.position == position)
@@ -97,9 +105,9 @@ public:
      * @param updatedEmployee The updated employee data
      * @return true if update was successful, false otherwise
      */
-    bool updateEmployee(const std::string& employeeId, const Employee& updatedEmployee)
+    bool updateEmployee(const std::string &employeeId, const Employee &updatedEmployee)
     {
-        Node<Employee>* employee = findEmployeeById(employeeId);
+        Node<Employee> *employee = findEmployeeById(employeeId);
         if (employee != nullptr)
         {
             employee->data = updatedEmployee;
@@ -108,12 +116,11 @@ public:
         return false;
     }
 
-
     /**
      * @brief Get all employees
      * @return Pointer to the head of employee list
      */
-    Node<Employee>* getAllEmployees()
+    Node<Employee> *getAllEmployees()
     {
         return getAllItems();
     }
@@ -123,7 +130,7 @@ public:
      * @param employeeId The ID to check
      * @return true if employee exists, false otherwise
      */
-    bool employeeExists(const std::string& employeeId)
+    bool employeeExists(const std::string &employeeId)
     {
         return findEmployeeById(employeeId) != nullptr;
     }
@@ -142,10 +149,11 @@ public:
      * @param employeeId The ID of the employee to delete
      * @return true if the employee was removed, false otherwise
      */
-    bool deleteEmployee(const std::string& employeeId)
+    bool deleteEmployee(const std::string &employeeId)
     {
-        Node<Employee>* employee = findEmployeeById(employeeId);
-        if (employee == nullptr) return false;
+        Node<Employee> *employee = findEmployeeById(employeeId);
+        if (employee == nullptr)
+            return false;
         return dataList.remove(employee->data);
     }
 
@@ -154,10 +162,10 @@ public:
      * @param keyword Keyword to search for
      * @return LinkedList containing matching employees
      */
-    LinkedList<Employee> searchEmployees(const std::string& keyword)
+    LinkedList<Employee> searchEmployees(const std::string &keyword)
     {
         LinkedList<Employee> results;
-        Node<Employee>* current = dataList.getHead();
+        Node<Employee> *current = dataList.getHead();
         while (current != nullptr)
         {
             if (current->data.employeeId.find(keyword) != std::string::npos ||
@@ -174,18 +182,24 @@ public:
     /**
      * @brief Thống kê số lượng nhân viên theo chức vụ
      */
-    LinkedList<CountResult> countEmployeesByPosition() const {
+    LinkedList<CountResult> countEmployeesByPosition() const
+    {
         LinkedList<CountResult> posCount;
-        Node<Employee>* current = dataList.getHead();
-        while (current != nullptr) {
-            const std::string& pos = current->data.position;
-            Node<CountResult>* entry = posCount.getHead();
-            while (entry != nullptr && entry->data.key != pos) {
+        Node<Employee> *current = dataList.getHead();
+        while (current != nullptr)
+        {
+            const std::string &pos = current->data.position;
+            Node<CountResult> *entry = posCount.getHead();
+            while (entry != nullptr && entry->data.key != pos)
+            {
                 entry = entry->next;
             }
-            if (entry != nullptr) {
+            if (entry != nullptr)
+            {
                 entry->data.count++;
-            } else {
+            }
+            else
+            {
                 posCount.insert(CountResult{pos, 1}, INSERT_TAIL);
             }
             current = current->next;

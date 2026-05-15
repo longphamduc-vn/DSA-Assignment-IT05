@@ -24,11 +24,21 @@ public:
      * @brief Add a new booking
      * @param booking The booking object to add
      */
-    void addBooking(const Booking &booking)
+/**
+     * @brief Add a new booking with duplicate check
+     * @param booking The booking object to add
+     * @return true if added successfully, false if ID already exists
+     */
+    bool addBooking(const Booking &booking)
     {
-        addItem(booking);
-    }
+        if (bookingExists(booking.bookingId))
+        {
+            return false; 
+        }
 
+        addItem(booking);
+        return true; 
+    }
     /**
      * @brief Search for a booking by ID
      * @param bookingId The ID to search for

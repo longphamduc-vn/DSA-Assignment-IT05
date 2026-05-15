@@ -49,7 +49,10 @@ private:
                 for (int i = 0; i < n; i++)
                 {
                     cout << "\n--- Entering Tour #" << i + 1 << " ---\n";
-                    tourService.addTour(InputHandler::inputTour());
+                    if (!tourService.addTour(InputHandler::inputTour()))
+                    {
+                        cout << "[!] Error: Tour ID already exists. Skipping this entry.\n";
+                    }
                 }
                 ConsoleUI::successMessage("Tours added successfully!");
                 break;
@@ -74,7 +77,10 @@ private:
                 for (int i = 0; i < n; i++)
                 {
                     cout << "\n--- Entering Customer #" << i + 1 << " ---\n";
-                    customerService.addCustomer(InputHandler::inputCustomer());
+                    if (!customerService.addCustomer(InputHandler::inputCustomer()))
+                    {
+                        cout << "[!] Error: Customer ID already exists. Skipping this entry.\n";
+                    }
                 }
 
                 ConsoleUI::successMessage("Customers added successfully!");
@@ -100,7 +106,10 @@ private:
                 for (int i = 0; i < n; i++)
                 {
                     cout << "\n--- Entering Employee #" << i + 1 << " ---\n";
-                    employeeService.addEmployee(InputHandler::inputEmployee());
+                    if (!employeeService.addEmployee(InputHandler::inputEmployee()))
+                    {
+                        cout << "[!] Error: Employee ID already exists. Skipping this entry.\n";
+                    }
                 }
                 ConsoleUI::successMessage("Employees added successfully!");
                 break;
@@ -161,8 +170,14 @@ private:
                         continue; // Bỏ qua lượt này nếu user gõ 'cancel'
 
                     // Thêm booking khi đã có đủ thông tin
-                    bookingService.addBooking(InputHandler::inputBooking(cNode->data, tNode->data));
-                    ConsoleUI::successMessage("Booking created successfully!");
+                    if (!bookingService.addBooking(InputHandler::inputBooking(cNode->data, tNode->data)))
+                    {
+                        cout << "[!] Error: Failed to create booking.\n";
+                    }
+                    else
+                    {
+                        ConsoleUI::successMessage("Booking created successfully!");
+                    }
                 }
                 break;
             }
@@ -211,8 +226,14 @@ private:
             // ================= TOUR =================
             case 1:
 
-                tourService.addTour(InputHandler::inputTour());
-                ConsoleUI::successMessage("Tour added successfully!");
+                if (!tourService.addTour(InputHandler::inputTour()))
+                {
+                    cout << "[!] Error: Tour ID already exists. Skipping this entry.\n";
+                }
+                else
+                {
+                    ConsoleUI::successMessage("Tour added successfully!");
+                }
                 break;
             case 2:
             {
@@ -244,8 +265,14 @@ private:
 
             // ================= CUSTOMER =================
             case 4:
-                customerService.addCustomer(InputHandler::inputCustomer());
-                ConsoleUI::successMessage("Customer added successfully!");
+                if (!customerService.addCustomer(InputHandler::inputCustomer()))
+                {
+                    cout << "[!] Error: Customer ID already exists. Skipping this entry.\n";
+                }
+                else
+                {
+                    ConsoleUI::successMessage("Customer added successfully!");
+                }
                 break;
             case 5:
             {
@@ -277,8 +304,14 @@ private:
 
             // ================= EMPLOYEE =================
             case 7:
-                employeeService.addEmployee(InputHandler::inputEmployee());
-                ConsoleUI::successMessage("Employee added successfully!");
+                if (!employeeService.addEmployee(InputHandler::inputEmployee()))
+                {
+                    cout << "[!] Error: Employee ID already exists. Skipping this entry.\n";
+                }
+                else
+                {
+                    ConsoleUI::successMessage("Employee added successfully!");
+                }
                 break;
             case 8:
             {
@@ -330,8 +363,14 @@ private:
                     break;
                 }
 
-                bookingService.addBooking(InputHandler::inputBooking(cNode->data, tNode->data));
-                ConsoleUI::successMessage("Booking added successfully!");
+                if (!bookingService.addBooking(InputHandler::inputBooking(cNode->data, tNode->data)))
+                {
+                    cout << "[!] Error: Failed to create booking.\n";
+                }
+                else
+                {
+                    ConsoleUI::successMessage("Booking added successfully!");
+                }
             }
             break;
             case 11:

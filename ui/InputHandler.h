@@ -78,6 +78,7 @@ public:
         Tour t;
         cout << "\n--- ENTER TOUR INFORMATION ---\n";
         t.tourId         = getValidString("Enter Tour ID: ", Validation::isValidId, "Wrong ID format.");
+        
         t.tourName       = getValidString("Enter Tour Name: ", Validation::isValidName, "Invalid name format.");
         
         t.destination    = getValidString("Enter Destination: ", nullptr); 

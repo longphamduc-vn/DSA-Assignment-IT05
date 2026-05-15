@@ -22,9 +22,15 @@ public:
      * @brief Add a new customer
      * @param customer The customer object to add
      */
-    void addCustomer(const Customer& customer)
+    bool addCustomer(const Customer& customer)
     {
+        if (customerExists(customer.customerId))
+        {
+            return false; 
+        }
+
         addItem(customer);
+        return true; 
     }
 
     /**
