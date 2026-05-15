@@ -214,6 +214,7 @@ private:
             {
             // ================= TOUR =================
             case 1:
+                ConsoleUI::clearBuffer();    
                 tourService.addTour(InputHandler::inputTour());
                 ConsoleUI::successMessage("Tour added successfully!");
                 break;
@@ -228,7 +229,7 @@ private:
                     break;
                 }
                 Tour t = InputHandler::inputTour();
-                t.tourId = id; // Giữ nguyên ID cũ
+                t.tourId = id; 
                 tourService.updateTour(id, t);
                 ConsoleUI::successMessage("Tour updated successfully!");
             }

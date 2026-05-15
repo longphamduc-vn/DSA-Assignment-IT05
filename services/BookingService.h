@@ -3,6 +3,8 @@
 
 #include <string>
 #include <iostream>
+#include <map>
+#include <utility>
 #include "GenericService.h"
 #include "../models/Booking.h"
 #include "../core/LinkedList.h"

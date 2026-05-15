@@ -77,11 +77,9 @@ public:
     {
         Tour t;
         cout << "\n--- ENTER TOUR INFORMATION ---\n";
-        
         t.tourId         = getValidString("Enter Tour ID: ", Validation::isValidId, "Wrong ID format.");
         t.tourName       = getValidString("Enter Tour Name: ", Validation::isValidName, "Invalid name format.");
         
-        // Không có isValidDestination, truyền nullptr để chỉ cần check isEmpty
         t.destination    = getValidString("Enter Destination: ", nullptr); 
         
         t.price          = getValidNumber<double>("Enter Price (VND): ", Validation::isValidPrice, "Price must be valid.");
