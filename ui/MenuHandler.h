@@ -36,7 +36,6 @@ private:
             cout << "\n-------------------------------------------------------";
 
             ConsoleUI::inputSafeInt(choice, "Select an action (0-16): ");
-
             if (choice == 0)
                 break;
 
@@ -59,7 +58,6 @@ private:
                 ConsoleUI::printTourTable(tourService.getRepository());
                 break;
             case 3:
-                // Tối ưu: Nên để hàm load/save trả về bool để check trạng thái thực sự
                 tourService.loadFromFile("data/tours.txt");
                 ConsoleUI::successMessage("Tours loaded successfully!");
                 break;
@@ -84,7 +82,6 @@ private:
             }
             case 6:
                 ConsoleUI::printCustomerTable(customerService.getRepository());
-                ConsoleUI::pauseScreen();
                 break;
             case 7:
                 customerService.loadFromFile("data/customers.txt");
@@ -99,7 +96,6 @@ private:
             case 9:
             {
                 int n;
-                // Đã đồng bộ: Bỏ cin >> n và clearBuffer, dùng inputSafeInt
                 ConsoleUI::inputSafeInt(n, "How many Employees to add? ");
                 for (int i = 0; i < n; i++)
                 {
@@ -194,6 +190,7 @@ private:
     {
         while (true)
         {
+            ConsoleUI::clearScreen();
             int choice;
             cout << "\n=======================================================";
             cout << "\n         INFORMATION UPDATE (ADD/EDIT/DELETE)";
@@ -206,7 +203,6 @@ private:
             cout << "\n-------------------------------------------------------";
 
             ConsoleUI::inputSafeInt(choice, "\nSelect an action (0-11): ");
-            ConsoleUI::clearBuffer();  
             if (choice == 0)
                 break;
 
@@ -362,6 +358,7 @@ private:
     {
         while (true)
         {
+            ConsoleUI::clearScreen();
             int choice;
             cout << "\n=======================================================";
             cout << "\n              DATA QUERY (SEARCH & FILTER)";
@@ -407,6 +404,7 @@ private:
     {
         while (true)
         {
+            ConsoleUI::clearScreen();
             int choice;
             cout << "\n=== DATA ORGANIZATION (SORT) ===\n";
             cout << "  [ TOUR ]\n";
@@ -433,87 +431,88 @@ private:
 
     // ================= 5. BOUNDARY ANALYSIS (MAX/MIN) =================
 
-    void menuBoundaryAnalysis()
+   void menuBoundaryAnalysis()
+{
+    while (true)
     {
-        while (true)
+        ConsoleUI::clearScreen();
+        int choice;
+        cout << "\n=======================================================";
+        cout << "\n            BOUNDARY ANALYSIS (MAX/MIN)";
+        cout << "\n=======================================================";
+        cout << "\n [ TOUR ANALYSIS ]";
+        cout << "\n 1. Price Analysis      (Highest / Lowest)";
+        cout << "\n 2. Duration Analysis    (Longest / Shortest)";
+        cout << "\n 3. Popularity Analysis  (Most / Least Popular)";
+        cout << "\n\n [ BOOKING ANALYSIS ]";
+        cout << "\n 4. People Analysis      (Most / Fewest People)";
+        cout << "\n\n [ 0. Go Back ]";
+        cout << "\n-------------------------------------------------------";
+
+        ConsoleUI::inputSafeInt(choice, "\nSelect an action (0-4): ");
+
+        if (choice == 0)
+            break;
+
+        cout << "\n--- ANALYSIS RESULTS ---\n";
+
+        switch (choice)
         {
-            int choice;
-            cout << "\n=======================================================";
-            cout << "\n            BOUNDARY ANALYSIS (MAX/MIN)";
-            cout << "\n=======================================================";
-            cout << "\n [ TOUR ANALYSIS ]";
-            cout << "\n 1. Price Analysis      (Highest / Lowest)";
-            cout << "\n 2. Duration Analysis    (Longest / Shortest)";
-            cout << "\n 3. Popularity Analysis  (Most / Least Popular)";
-            cout << "\n\n [ BOOKING ANALYSIS ]";
-            cout << "\n 4. People Analysis      (Most / Fewest People)";
-            cout << "\n\n [ 0. Go Back ]";
-            cout << "\n-------------------------------------------------------";
-
-            ConsoleUI::inputSafeInt(choice, "\nSelect an action (0-4): ");
-
-            if (choice == 0)
-                break;
-
-            cout << "\n--- ANALYSIS RESULTS ---\n";
-
-            switch (choice)
-            {
-            case 1:
-            {
-                auto max = tourService.getHighestPriceTour();
-                auto min = tourService.getLowestPriceTour();
-                cout << ">> Highest Price Tour: " << (max ? max->data.tourId : "N/A") << "\n";
-                cout << ">> Lowest Price Tour:  " << (min ? min->data.tourId : "N/A") << "\n";
-                break;
-            }
-            case 2:
-            {
-                auto max = tourService.getLongestDurationTour();
-                auto min = tourService.getShortestDurationTour();
-                cout << ">> Longest Duration Tour:  " << (max ? max->data.tourId : "N/A") << "\n";
-                cout << ">> Shortest Duration Tour: " << (min ? min->data.tourId : "N/A") << "\n";
-                break;
-            }
-            case 3:
-            {
-                auto max = tourService.getMostPopularTour();
-                auto min = tourService.getLeastPopularTour();
-                cout << ">> Most Popular Tour:  " << (max ? max->data.tourId : "N/A") << "\n";
-                cout << ">> Least Popular Tour: " << (min ? min->data.tourId : "N/A") << "\n";
-                break;
-            }
-            case 4:
-            {
-                // Giả sử bạn đã thêm 2 hàm này vào bookingService
-                auto max = bookingService.getBookingWithMostPeople();
-                auto min = bookingService.getBookingWithFewestPeople();
-
-                if (!max || !min)
-                {
-                    cout << ">> No booking data available.\n";
-                }
-                else
-                {
-                    cout << ">> Booking with Most People:   " << max->data.bookingId << " (" << max->data.numberOfPeople << " pax)\n";
-                    cout << ">> Booking with Fewest People: " << min->data.bookingId << " (" << min->data.numberOfPeople << " pax)\n";
-                }
-                break;
-            }
-            default:
-                ConsoleUI::errorMessage("Invalid choice! Please select between 0 and 4.");
-                continue; // Bỏ qua phần pause nếu nhập sai
-            }
-
-            ConsoleUI::pauseScreen();
+        case 1:
+        {
+            Node<Tour>* max = tourService.getHighestPriceTour();
+            Node<Tour>* min = tourService.getLowestPriceTour();
+            cout << ">> Highest Price Tour: " << (max ? max->data.tourId : "N/A") << "\n";
+            cout << ">> Lowest Price Tour:  " << (min ? min->data.tourId : "N/A") << "\n";
+            break;
         }
-    }
+        case 2:
+        {
+            Node<Tour>* max = tourService.getLongestDurationTour();
+            Node<Tour>* min = tourService.getShortestDurationTour();
+            cout << ">> Longest Duration Tour:  " << (max ? max->data.tourId : "N/A") << "\n";
+            cout << ">> Shortest Duration Tour: " << (min ? min->data.tourId : "N/A") << "\n";
+            break;
+        }
+        case 3:
+        {
+            Node<Tour>* max = tourService.getMostPopularTour();
+            Node<Tour>* min = tourService.getLeastPopularTour();
+            cout << ">> Most Popular Tour:  " << (max ? max->data.tourId : "N/A") << "\n";
+            cout << ">> Least Popular Tour: " << (min ? min->data.tourId : "N/A") << "\n";
+            break;
+        }
+        case 4:
+        {
+            // Thay thế auto bằng Node<Booking>* cho danh sách quản lý khách hàng/đặt chỗ
+            Node<Booking>* max = bookingService.getBookingWithMostPeople();
+            Node<Booking>* min = bookingService.getBookingWithFewestPeople();
 
+            if (!max || !min)
+            {
+                cout << ">> No booking data available.\n";
+            }
+            else
+            {
+                cout << ">> Booking with Most People:   " << max->data.bookingId << " (" << max->data.numberOfPeople << " pax)\n";
+                cout << ">> Booking with Fewest People: " << min->data.bookingId << " (" << min->data.numberOfPeople << " pax)\n";
+            }
+            break;
+        }
+        default:
+            ConsoleUI::errorMessage("Invalid choice! Please select between 0 and 4.");
+            continue; 
+        }
+
+        ConsoleUI::pauseScreen();
+    }
+}
     // ================= 6. GENERAL MEASUREMENT (SUM/AVG/COUNT) =================
     void menuGeneralMeasurement()
     {
         while (true)
         {
+            ConsoleUI::clearScreen();
             int choice;
             cout << "\n=======================================================";
             cout << "\n       GENERAL MEASUREMENT (SUM / AVG / COUNT)";
@@ -587,10 +586,11 @@ private:
     // ================= 7. CATEGORICAL REPORTING (STATISTICS) =================
 
 
-    void menuCategoricalReporting()
+void menuCategoricalReporting()
     {
         while (true)
         {
+            ConsoleUI::clearScreen();
             int choice;
             cout << "\n=======================================================";
             cout << "\n         CATEGORICAL REPORTING (STATISTICS)";
@@ -605,7 +605,7 @@ private:
             cout << "\n 7. Employees by Position     8. Performance (Task Count)";
             cout << "\n\n 0. Go Back";
             cout << "\n-------------------------------------------------------";
-
+            
             ConsoleUI::inputSafeInt(choice, "\nSelect an action (0-8): ");
             if (choice == 0)
                 break;
@@ -617,10 +617,11 @@ private:
             {
             case 1:
             {
-                auto results = tourService.countToursByDestination();
+                // Sử dụng TourService::CountResult
+                LinkedList<TourService::CountResult> results = tourService.countToursByDestination();
                 if (results.getHead() == nullptr)
                     cout << "No data available.\n";
-                for (auto current = results.getHead(); current != nullptr; current = current->next)
+                for (Node<TourService::CountResult>* current = results.getHead(); current != nullptr; current = current->next)
                     cout << ">> " << left << setw(20) << current->data.key << ": " << current->data.count << " tours\n";
                 break;
             }
@@ -635,50 +636,51 @@ private:
             }
             case 3:
             {
-                auto results = tourService.countToursByStatus();
-                for (auto current = results.getHead(); current != nullptr; current = current->next)
+                LinkedList<TourService::CountResult> results = tourService.countToursByStatus();
+                for (Node<TourService::CountResult>* current = results.getHead(); current != nullptr; current = current->next)
                     cout << ">> Status [" << current->data.key << "]: " << current->data.count << " tours\n";
                 break;
             }
             case 4:
             {
-                auto results = bookingService.getRevenueByTour();
+                std::map<std::string, double> results = bookingService.getRevenueByTour();
                 if (results.empty())
                     cout << "No revenue data (Confirmed/Paid bookings only).\n";
-                for (auto const &[id, rev] : results)
-                    cout << ">> Tour: " << id << " | Revenue: $" << rev << "\n";
+                for (const std::pair<const std::string, double>& item : results)
+                    cout << ">> Tour: " << item.first << " | Revenue: $" << item.second << "\n";
                 break;
             }
             case 5:
             {
-                auto results = bookingService.getAverageValueByStatus();
-                for (auto const &[status, data] : results)
+                std::map<std::string, std::pair<double, int>> results = bookingService.getAverageValueByStatus();
+                for (const std::pair<const std::string, std::pair<double, int>>& item : results)
                 {
-                    double avg = data.first / data.second;
-                    cout << ">> " << left << setw(12) << status << " Avg: $" << setw(10) << avg
-                         << " (" << data.second << " bookings)\n";
+                    double avg = item.second.first / item.second.second;
+                    cout << ">> " << left << setw(12) << item.first << " Avg: $" << setw(10) << avg
+                         << " (" << item.second.second << " bookings)\n";
                 }
                 break;
             }
             case 6:
             {
-                auto results = bookingService.countBookingsByStatus();
-                for (auto const &[status, count] : results)
-                    cout << ">> Status [" << status << "]: " << count << " bookings\n";
+                std::map<std::string, int> results = bookingService.countBookingsByStatus();
+                for (const std::pair<const std::string, int>& item : results)
+                    cout << ">> Status [" << item.first << "]: " << item.second << " bookings\n";
                 break;
             }
             case 7:
             {
-                auto results = employeeService.countEmployeesByPosition();
-                for (auto current = results.getHead(); current != nullptr; current = current->next)
+                // Sử dụng EmployeeService::CountResult
+                LinkedList<EmployeeService::CountResult> results = employeeService.countEmployeesByPosition();
+                for (Node<EmployeeService::CountResult>* current = results.getHead(); current != nullptr; current = current->next)
                     cout << ">> " << left << setw(20) << current->data.key << ": " << current->data.count << "\n";
                 break;
             }
             case 8:
             {
-                auto results = bookingService.getEmployeePerformance();
-                for (auto const &[empId, count] : results)
-                    cout << ">> Employee [" << empId << "] handled: " << count << " tasks\n";
+                std::map<std::string, int> results = bookingService.getEmployeePerformance();
+                for (const std::pair<const std::string, int>& item : results)
+                    cout << ">> Employee [" << item.first << "] handled: " << item.second << " tasks\n";
 
                 int totalE = employeeService.getItemCount();
                 if (totalE > 0)
@@ -692,7 +694,6 @@ private:
             ConsoleUI::pauseScreen();
         }
     }
-
     // ================= MAIN MENU HIỂN THỊ =================
     void displayMainMenu()
     {
@@ -716,6 +717,7 @@ public:
 
     void run()
     {
+        ConsoleUI::clearScreen();
         int choice;
         while (true)
         {

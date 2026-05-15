@@ -1,0 +1,22 @@
+@startuml
+title Count Tours by Destination
+
+start
+:counts = [];
+:current = head;
+
+while (current != null?) is (Yes)
+  :dest = current->destination;
+  
+  if (dest in counts?) then (Yes)
+    :dest.count++;
+  else (No)
+    :counts << {dest, 1};
+  endif
+  
+  :current = current->next;
+endwhile (No)
+
+:Return counts;
+stop
+@enduml
