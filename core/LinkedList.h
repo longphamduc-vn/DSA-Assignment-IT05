@@ -5,6 +5,7 @@
 #include <cstddef>
 #include "Node.h"
 
+using namespace std;
 /**
  * @brief Enum to define where a new element should be placed in the list.
  */
@@ -159,7 +160,7 @@ public:
      * @brief Retrieves the element at a specific index.
      * @param index The position of the element (0-based).
      * @return T The value at the specified index.
-     * @throw std::out_of_range if index is out of bounds.
+     * @throw out_of_range if index is out of bounds.
      */
     T getAt(size_t index) const
     {
@@ -172,7 +173,7 @@ public:
         }
         if (current == nullptr)
         {
-            throw std::out_of_range("Index out of bounds");
+            throw out_of_range("Index out of bounds");
         }
         return current->data;
     }
@@ -223,13 +224,13 @@ public:
     /**
      * @brief Tìm giá trị nhỏ nhất trong danh sách.
      * @return T Giá trị nhỏ nhất.
-     * @throw std::runtime_error Nếu danh sách trống.
+     * @throw runtime_error Nếu danh sách trống.
      */
     T getMin() const
     {
         if (head == nullptr)
         {
-            throw std::runtime_error("List is empty");
+            throw runtime_error("List is empty");
         }
 
         Node<T> *current = head;
@@ -249,13 +250,13 @@ public:
     /**
      * @brief Tìm giá trị lớn nhất trong danh sách.
      * @return T Giá trị lớn nhất.
-     * @throw std::runtime_error Nếu danh sách trống.
+     * @throw runtime_error Nếu danh sách trống.
      */
     T getMax() const
     {
         if (head == nullptr)
         {
-            throw std::runtime_error("List is empty");
+            throw runtime_error("List is empty");
         }
 
         Node<T> *current = head;

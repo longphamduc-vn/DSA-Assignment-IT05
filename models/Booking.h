@@ -6,12 +6,13 @@
 #include "Customer.h"
 #include "Tour.h"
 #include "Employee.h"
+using namespace std;
 
 struct Booking {
-    std::string bookingId;
-    std::string bookingDate;
+    string bookingId;
+    string bookingDate;
     int numberOfPeople;
-    std::string status;  // confirmed, cancelled, pending
+    string status;  // confirmed, cancelled, pending
 
     Customer customer;
     Tour tour;
@@ -21,9 +22,9 @@ struct Booking {
      * @brief Serialize Booking to a string for file storage.
      * Note: Only stores IDs of the nested objects to prevent data duplication.
      */
-    std::string toFileString() const {
+    string toFileString() const {
         return bookingId + "|" + bookingDate + "|" + 
-               std::to_string(numberOfPeople) + "|" + status + "|" + 
+               to_string(numberOfPeople) + "|" + status + "|" + 
                customer.customerId + "|" + tour.tourId + "|" + employee.employeeId;
     }
 
@@ -32,23 +33,23 @@ struct Booking {
      * Note: Only recovers the IDs of the nested objects. Full objects should be 
      * reconstructed by a service/manager class later if needed.
      */
-    void fromFileString(const std::string& line) {
-        std::stringstream ss(line);
-        std::string temp;
+    void fromFileString(const string& line) {
+        stringstream ss(line);
+        string temp;
         
-        std::getline(ss, bookingId, '|');
-        std::getline(ss, bookingDate, '|');
+        getline(ss, bookingId, '|');
+        getline(ss, bookingDate, '|');
         
-        if (std::getline(ss, temp, '|')) {
-            try { numberOfPeople = std::stoi(temp); } catch (...) { numberOfPeople = 0; }
+        if (getline(ss, temp, '|')) {
+            try { numberOfPeople = stoi(temp); } catch (...) { numberOfPeople = 0; }
         }
         
-        std::getline(ss, status, '|');
+        getline(ss, status, '|');
         
         // Read mapping IDs into the nested objects
-        std::getline(ss, customer.customerId, '|');
-        std::getline(ss, tour.tourId, '|');
-        std::getline(ss, employee.employeeId, '|');
+        getline(ss, customer.customerId, '|');
+        getline(ss, tour.tourId, '|');
+        getline(ss, employee.employeeId, '|');
     }
 
     /**

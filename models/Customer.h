@@ -4,28 +4,30 @@
 #include <string>
 #include <sstream>
 
+using namespace std;
+
 struct Customer {
-    std::string customerId;
-    std::string fullName;
-    std::string phoneNumber;
-    std::string email;
+    string customerId;
+    string fullName;
+    string phoneNumber;
+    string email;
     
     /**
      * @brief Serialize Customer to a string for file storage.
      */
-    std::string toFileString() const {
+    string toFileString() const {
         return customerId + "|" + fullName + "|" + phoneNumber + "|" + email;
     }
 
     /**
      * @brief Deserialize Customer from a file string.
      */
-    void fromFileString(const std::string& line) {
-        std::stringstream ss(line);
-        std::getline(ss, customerId, '|');
-        std::getline(ss, fullName, '|');
-        std::getline(ss, phoneNumber, '|');
-        std::getline(ss, email, '|');
+    void fromFileString(const string& line) {
+        stringstream ss(line);
+        getline(ss, customerId, '|');
+        getline(ss, fullName, '|');
+        getline(ss, phoneNumber, '|');
+        getline(ss, email, '|');
     }
 
     /**

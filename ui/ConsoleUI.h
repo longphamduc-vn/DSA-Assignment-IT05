@@ -15,58 +15,73 @@
 #include "../models/Booking.h"
 #include "../models/Employee.h"
 
+using namespace std;
+
 class ConsoleUI
 {
 public:
-    // Helper for numeric validation to prevent "input lag/crash" if user enters text
-    static void inputSafeInt(int &value, const std::string &prompt)
-    {
+    static void inputSafeInt(int &value, const std::string &prompt) {
+    while (true) {
         std::cout << prompt;
-        while (!(std::cin >> value))
-        {
+        if (std::cin >> value) {
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break; 
+        } else {
             std::cout << "-> Error: Please enter a valid integer. Try again: ";
-            std::cin.clear();                                                   // Clear error flags
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard buffer
-        }
-    }
-
-    static void InputSafeString(std::string &value, const std::string &prompt)
-    {
-        std::cout << prompt;
-        std::getline(std::cin, value);
-        while (value.empty())
-        {
-            std::cout << "-> Error: Input cannot be empty. Try again: ";
-            std::getline(std::cin, value);
-        }
-    }
-    static void inputSafeDouble(double &value, const std::string &prompt)
-    {
-        std::cout << prompt;
-        while (!(std::cin >> value))
-        {
-            std::cout << "-> Error: Please enter a valid decimal number. Try again: ";
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
     }
+}
+
+    static void InputSafeString(string &value, const string &prompt) {
+    while (true) {
+        cout << prompt;
+        
+        // Loại bỏ khoảng trắng/dấu xuống dòng còn sót lại từ các lệnh cin >> trước đó
+        cin >> ws; 
+
+        if (getline(cin, value)) {
+            // Kiểm tra nếu chuỗi không chỉ toàn khoảng trắng
+            if (!value.empty()) {
+                break; 
+            }
+        }
+        cout << "-> Error: Input cannot be empty. Try again: " << endl;
+    }
+}
+
+static void inputSafeDouble(double &value, const string &prompt) {
+    while (true) {
+        cout << prompt;
+        if (cin >> value) {
+            // Nhập thành công số, dọn dẹp bộ đệm cho các lệnh sau
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        } else {
+            cout << "-> Error: Please enter a valid decimal number. Try again: " << endl;
+            cin.clear(); // Xóa trạng thái lỗi
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Xóa bộ đệm
+        }
+    }
+}
 
     // ==========================================
     // 1. Screen Utilities
     // ==========================================
-    static void successMessage(const std::string &message)
+    static void successMessage(const string &message)
     {
-        std::cout << ">> " << message << "\n";
+        cout << ">> " << message << "\n";
     }
 
-        static void errorMessage(const std::string &message)
+        static void errorMessage(const string &message)
         {
-            std::cout << "!! " << message << "\n";
+            cout << "!! " << message << "\n";
         }
         
     static void clearScreen()
     {
-        std::cout << "\033[2J\033[1;1H";
+        cout << "\033[2J\033[1;1H";
 #if defined(_WIN32)
         system("cls");
 #else
@@ -75,18 +90,18 @@ public:
     }
     static void clearBuffer()
     {
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
     static void pauseScreen()
     {
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cin.get();
+        cout << "\nPress Enter to continue...";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
     }
 
     static void printLine(int length = 85, char ch = '-')
     {
-        std::cout << std::string(length, ch) << "\n";
+        cout << string(length, ch) << "\n";
     }
 
     // ==========================================
@@ -97,23 +112,23 @@ public:
     {
         if (list.getSize() == 0)
         {
-            std::cout << "-> Employee list is currently empty.\n";
+            cout << "-> Employee list is currently empty.\n";
             return;
         }
 
         printLine(60, '=');
-        std::cout << std::left << std::setw(10) << "ID"
-                  << std::setw(30) << "Full Name"
-                  << std::setw(20) << "Position" << "\n";
+        cout << left << setw(10) << "ID"
+                  << setw(30) << "Full Name"
+                  << setw(20) << "Position" << "\n";
         printLine(60, '-');
 
         Node<Employee> *current = list.getHead();
         while (current != nullptr)
         {
             const Employee &e = current->data;
-            std::cout << std::left << std::setw(10) << e.employeeId
-                      << std::setw(30) << e.fullName
-                      << std::setw(20) << e.position << "\n";
+            cout << left << setw(10) << e.employeeId
+                      << setw(30) << e.fullName
+                      << setw(20) << e.position << "\n";
             current = current->next;
         }
         printLine(60, '=');
@@ -123,27 +138,27 @@ public:
     {
         if (list.getSize() == 0)
         {
-            std::cout << "-> Tour list is currently empty.\n";
+            cout << "-> Tour list is currently empty.\n";
             return;
         }
 
         printLine(75, '=');
-        std::cout << std::left << std::setw(8) << "ID"
-                  << std::setw(25) << "Destination"
-                  << std::setw(15) << "Price ($)"
-                  << std::setw(12) << "Available"
-                  << std::setw(10) << "Status" << "\n";
+        cout << left << setw(8) << "ID"
+                  << setw(25) << "Destination"
+                  << setw(15) << "Price ($)"
+                  << setw(12) << "Available"
+                  << setw(10) << "Status" << "\n";
         printLine(75, '-');
 
         Node<Tour> *current = list.getHead();
         while (current != nullptr)
         {
             const Tour &t = current->data;
-            std::cout << std::left << std::setw(8) << t.tourId
-                      << std::setw(25) << t.destination
-                      << std::setw(15) << std::fixed << std::setprecision(2) << t.price
-                      << std::setw(12) << t.availableSeats
-                      << std::setw(10) << t.status << "\n";
+            cout << left << setw(8) << t.tourId
+                      << setw(25) << t.destination
+                      << setw(15) << fixed << setprecision(2) << t.price
+                      << setw(12) << t.availableSeats
+                      << setw(10) << t.status << "\n";
             current = current->next;
         }
         printLine(75, '=');
@@ -153,25 +168,25 @@ public:
     {
         if (list.getSize() == 0)
         {
-            std::cout << "-> Customer list is currently empty.\n";
+            cout << "-> Customer list is currently empty.\n";
             return;
         }
 
         printLine(85, '=');
-        std::cout << std::left << std::setw(10) << "ID"
-                  << std::setw(25) << "Full Name"
-                  << std::setw(20) << "Phone Number"
-                  << std::setw(25) << "Email" << "\n";
+        cout << left << setw(10) << "ID"
+                  << setw(25) << "Full Name"
+                  << setw(20) << "Phone Number"
+                  << setw(25) << "Email" << "\n";
         printLine(85, '-');
 
         Node<Customer> *current = list.getHead();
         while (current != nullptr)
         {
             const Customer &c = current->data;
-            std::cout << std::left << std::setw(10) << c.customerId
-                      << std::setw(25) << c.fullName
-                      << std::setw(20) << c.phoneNumber
-                      << std::setw(25) << c.email << "\n";
+            cout << left << setw(10) << c.customerId
+                      << setw(25) << c.fullName
+                      << setw(20) << c.phoneNumber
+                      << setw(25) << c.email << "\n";
             current = current->next;
         }
         printLine(85, '=');
@@ -181,29 +196,29 @@ public:
     {
         if (list.getSize() == 0)
         {
-            std::cout << "-> No booking records found.\n";
+            cout << "-> No booking records found.\n";
             return;
         }
 
         printLine(85, '=');
-        std::cout << std::left << std::setw(10) << "BookID"
-                  << std::setw(10) << "CustID"
-                  << std::setw(10) << "TourID"
-                  << std::setw(10) << "Guests"
-                  << std::setw(15) << "Book Date"
-                  << std::setw(15) << "Status" << "\n";
+        cout << left << setw(10) << "BookID"
+                  << setw(10) << "CustID"
+                  << setw(10) << "TourID"
+                  << setw(10) << "Guests"
+                  << setw(15) << "Book Date"
+                  << setw(15) << "Status" << "\n";
         printLine(85, '-');
 
         Node<Booking> *current = list.getHead();
         while (current != nullptr)
         {
             const Booking &b = current->data;
-            std::cout << std::left << std::setw(10) << b.bookingId
-                      << std::setw(10) << b.customer.customerId
-                      << std::setw(10) << b.tour.tourId
-                      << std::setw(10) << b.numberOfPeople
-                      << std::setw(15) << b.bookingDate
-                      << std::setw(15) << b.status << "\n";
+            cout << left << setw(10) << b.bookingId
+                      << setw(10) << b.customer.customerId
+                      << setw(10) << b.tour.tourId
+                      << setw(10) << b.numberOfPeople
+                      << setw(15) << b.bookingDate
+                      << setw(15) << b.status << "\n";
             current = current->next;
         }
         printLine(85, '=');
