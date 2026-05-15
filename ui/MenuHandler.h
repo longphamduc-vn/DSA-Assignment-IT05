@@ -206,7 +206,7 @@ private:
             cout << "\n-------------------------------------------------------";
 
             ConsoleUI::inputSafeInt(choice, "\nSelect an action (0-11): ");
-
+            ConsoleUI::clearBuffer();  
             if (choice == 0)
                 break;
 
@@ -214,7 +214,7 @@ private:
             {
             // ================= TOUR =================
             case 1:
-                ConsoleUI::clearBuffer();    
+
                 tourService.addTour(InputHandler::inputTour());
                 ConsoleUI::successMessage("Tour added successfully!");
                 break;
