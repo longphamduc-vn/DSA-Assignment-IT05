@@ -169,6 +169,82 @@ public:
         return dataList.remove(tourNode->data);
     }
 
+    // ==========================================
+    // CÁC HÀM SẮP XẾP (SORTING) CHO MENU
+    // ==========================================
+
+    /**
+     * @brief Sort tours by ID
+     * @param ascending true for A-Z, false for Z-A
+     */
+    void sortToursById(bool ascending = true)
+    {
+        if (dataList.getHead() == nullptr || dataList.getHead()->next == nullptr) return;
+
+        bool swapped;
+        do {
+            swapped = false;
+            Node<Tour>* current = dataList.getHead();
+            while (current->next != nullptr) {
+                bool condition = ascending ? (current->data.tourId > current->next->data.tourId) 
+                                           : (current->data.tourId < current->next->data.tourId);
+                if (condition) {
+                    std::swap(current->data, current->next->data);
+                    swapped = true;
+                }
+                current = current->next;
+            }
+        } while (swapped);
+    }
+
+    /**
+     * @brief Sort tours by Name
+     * @param ascending true for A-Z, false for Z-A
+     */
+    void sortToursByName(bool ascending = true)
+    {
+        if (dataList.getHead() == nullptr || dataList.getHead()->next == nullptr) return;
+
+        bool swapped;
+        do {
+            swapped = false;
+            Node<Tour>* current = dataList.getHead();
+            while (current->next != nullptr) {
+                bool condition = ascending ? (current->data.tourName > current->next->data.tourName) 
+                                           : (current->data.tourName < current->next->data.tourName);
+                if (condition) {
+                    std::swap(current->data, current->next->data);
+                    swapped = true;
+                }
+                current = current->next;
+            }
+        } while (swapped);
+    }
+
+    /**
+     * @brief Sort tours by Price
+     * @param ascending true for Lowest to Highest, false for Highest to Lowest
+     */
+    void sortToursByPrice(bool ascending = true)
+    {
+        if (dataList.getHead() == nullptr || dataList.getHead()->next == nullptr) return;
+
+        bool swapped;
+        do {
+            swapped = false;
+            Node<Tour>* current = dataList.getHead();
+            while (current->next != nullptr) {
+                bool condition = ascending ? (current->data.price > current->next->data.price) 
+                                           : (current->data.price < current->next->data.price);
+                if (condition) {
+                    std::swap(current->data, current->next->data);
+                    swapped = true;
+                }
+                current = current->next;
+            }
+        } while (swapped);
+    }
+
     /**
      * @brief Search tours by keyword in ID, name, or destination
      * @param keyword Keyword to search for

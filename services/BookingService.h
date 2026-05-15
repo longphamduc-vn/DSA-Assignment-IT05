@@ -391,7 +391,59 @@ public:
         }
         return extreme;
     }
+// ==========================================
+    // CÁC HÀM SẮP XẾP (SORTING) CHO MENU
+    // ==========================================
 
+    /**
+     * @brief Sort bookings by ID
+     * @param ascending true for A-Z (tăng dần), false for Z-A (giảm dần)
+     */
+    void sortBookingsById(bool ascending = true)
+    {
+        if (dataList.getHead() == nullptr || dataList.getHead()->next == nullptr) return;
+
+        bool swapped;
+        do {
+            swapped = false;
+            Node<Booking>* current = dataList.getHead();
+            while (current->next != nullptr) {
+                bool condition = ascending ? (current->data.bookingId > current->next->data.bookingId) 
+                                           : (current->data.bookingId < current->next->data.bookingId);
+                if (condition) {
+                    std::swap(current->data, current->next->data);
+                    swapped = true;
+                }
+                current = current->next;
+            }
+        } while (swapped);
+    }
+
+    /**
+     * @brief Sort bookings by Date
+     * @param ascending true for Oldest to Newest, false for Newest to Oldest
+     */
+    void sortBookingsByDate(bool ascending = true)
+    {
+        if (dataList.getHead() == nullptr || dataList.getHead()->next == nullptr) return;
+
+        bool swapped;
+        do {
+            swapped = false;
+            Node<Booking>* current = dataList.getHead();
+            while (current->next != nullptr) {
+                // Lưu ý: So sánh chuỗi ngày tháng sẽ hoạt động chuẩn xác nhất 
+                // nếu định dạng ngày là YYYY-MM-DD (VD: 2023-12-01 < 2024-01-15)
+                bool condition = ascending ? (current->data.bookingDate > current->next->data.bookingDate) 
+                                           : (current->data.bookingDate < current->next->data.bookingDate);
+                if (condition) {
+                    std::swap(current->data, current->next->data);
+                    swapped = true;
+                }
+                current = current->next;
+            }
+        } while (swapped);
+    }
     std::map<std::string, double> getRevenueByTour() const {
         std::map<std::string, double> revenueMap;
         Node<Booking>* current = dataList.getHead();
